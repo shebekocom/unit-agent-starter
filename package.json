@@ -1,0 +1,28 @@
+{
+  "name": "unit-agent-starter",
+  "version": "0.1.0",
+  "description": "Interactive starter for agent-managed projects.",
+  "type": "module",
+  "bin": {
+    "unit": "./bin/unit.js"
+  },
+  "scripts": {
+    "start": "node ./bin/unit.js",
+    "start:simple": "node ./bin/unit.js --mode simple",
+    "start:discovery": "node ./bin/unit.js --mode discovery",
+    "start:advanced": "node ./bin/unit.js --mode advanced",
+    "check": "node --check ./bin/unit.js"
+  },
+  "keywords": [
+    "agent",
+    "starter",
+    "codex",
+    "claude",
+    "gemini"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  }
+}
