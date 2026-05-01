@@ -171,7 +171,7 @@ function referenceBlock(references) {
 
 function inlineReferenceBlock(references) {
   const block = referenceBlock(references).trim();
-  return block ? `\n${block}\n` : "";
+  return block ? `\n${block}` : "";
 }
 
 function referenceMemoryLine(references) {
@@ -265,8 +265,7 @@ ${critical || "Не трогать .env и секреты."}
 ${answers.discovery ? answers.discovery.problem : description}
 
 ## Для кого
-${answers.discovery ? answers.discovery.users : "уточнить"}
-${inlineReferenceBlock(answers.references)}
+${answers.discovery ? answers.discovery.users : "уточнить"}${inlineReferenceBlock(answers.references)}
 
 ## Первый результат
 ${answers.discovery ? answers.discovery.mvpFlow : "уточнить"}
@@ -1388,7 +1387,7 @@ async function main() {
       customSkills
     };
 
-    await writeProjectFiles(projectRoot, mode === "simple" ? renderSimpleFiles(renderAnswers) : renderFiles(renderAnswers));
+    await writeProjectFiles(projectRoot, mode === "advanced" ? renderFiles(renderAnswers) : renderSimpleFiles(renderAnswers));
 
     const gitResult = shouldInitGit ? await maybeGitInit(projectRoot) : "git skipped by user";
 
@@ -1399,7 +1398,7 @@ async function main() {
     console.log(`Git: ${gitResult}`);
     console.log("\nПервый промпт для следующей сессии:");
     console.log("────────────────────────────────────");
-    if (mode === "simple") {
+    if (mode !== "advanced") {
       console.log(`Прочитай ${simpleAgentFileName(agentProfile)}, PRD.md, MEMORY.md и TASKS.md.`);
       console.log("Подтверди: что строим, что важно помнить, и какую задачу берёшь первой.");
       console.log("После работы записывай итоги в NOTES.md.");
