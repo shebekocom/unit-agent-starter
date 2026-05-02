@@ -10,6 +10,41 @@ Think of it as a blank starter theme for AI-agent-managed projects: the generate
 npm start
 ```
 
+## Global Use
+
+Install from this repository during development:
+
+```bash
+npm install -g .
+```
+
+After publishing to npm:
+
+```bash
+npm install -g unit-agent-starter
+```
+
+Then run from any folder:
+
+```bash
+cd C:\server\projects
+unit
+```
+
+The starter package stays in npm's global storage. The generated project is created inside the folder where `unit` is executed:
+
+```text
+C:\server\projects\
+  my-new-project\
+    AGENTS.md
+    PRD.md
+    MEMORY.md
+    TASKS.md
+    NOTES.md
+```
+
+The starter does not copy itself into the generated project.
+
 Explicit modes:
 
 ```bash

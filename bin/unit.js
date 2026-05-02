@@ -1340,6 +1340,11 @@ async function askRecommendedSkillsSimple(rl, suggested) {
 }
 
 async function main() {
+  if (process.argv.includes("--help") || process.argv.includes("-h")) {
+    printHelp();
+    return;
+  }
+
   const rl = await createPrompt();
 
   try {
@@ -1411,6 +1416,28 @@ async function main() {
   } finally {
     rl.close();
   }
+}
+
+function printHelp() {
+  console.log(`Unit Agent Starter
+
+Usage:
+  unit
+  unit --mode simple
+  unit --mode discovery
+  unit --mode advanced
+
+Modes:
+  simple     Minimal project context for one AI agent
+  discovery  Guided interview, then minimal project context
+  advanced   Scaffold, agent team mode, skills, and extra setup
+
+Examples:
+  cd C:\\server\\projects
+  unit --mode simple
+
+The generated project is created in the current directory.
+`);
 }
 
 function installedSummary(selectedSkills, customSkills) {
