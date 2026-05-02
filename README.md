@@ -9,19 +9,15 @@ unit simple
 
 Use it when you want Codex, Claude, Gemini, or another AI coding agent to understand a project before it starts changing files.
 
-Think of it as a blank starter theme for AI-agent-managed projects: the generated repo starts with the control files an agent needs before real implementation begins.
+Think of it as a blank starter theme for AI-agent-managed projects: the generated repo starts with the small set of control files an agent needs before implementation begins.
 
-For a plain-language explanation of the generated files and rules, read [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
+## Documentation
 
-For the difference between `simple`, `discovery`, and `advanced`, read [docs/MODES.md](docs/MODES.md).
+- [User Guide](docs/USER_GUIDE.md): plain-language explanation of generated files and rules.
+- [Modes](docs/MODES.md): difference between `simple`, `discovery`, and `advanced`.
+- [Discoverability Checklist](docs/DISCOVERABILITY.md): GitHub topics, launch notes, and promotion checklist.
 
-For GitHub topics, launch notes, and promotion checklist, read [docs/DISCOVERABILITY.md](docs/DISCOVERABILITY.md).
-
-## Local Use
-
-```bash
-npm start
-```
+Each document starts in English and includes a Russian translation at the bottom.
 
 ## Global Use
 
@@ -40,15 +36,14 @@ npm install -g unit-agent-starter
 Then run from any folder:
 
 ```bash
-cd C:\server\projects
 unit
 ```
 
-The starter package stays in npm's global storage. The generated project is created inside the folder where `unit` is executed:
+By default, `unit` creates a new folder with the project name:
 
 ```text
-C:\server\projects\
-  my-new-project\
+projects/
+  my-new-project/
     AGENTS.md
     PRD.md
     MEMORY.md
@@ -56,17 +51,17 @@ C:\server\projects\
     NOTES.md
 ```
 
-The starter does not copy itself into the generated project.
+The starter package stays in npm's global storage. It is not copied into the generated project.
 
-By default, `unit` creates a new folder with the project name. To create files directly in the current folder, use:
+To create files directly in the current folder:
 
 ```bash
+unit --here
 unit simple --here
 unit discovery --here
 ```
 
-`--here` does not overwrite existing generated files silently. If `PRD.md`, `MEMORY.md`, `TASKS.md`, or another target file already exists, Unit asks what to do.
-When a target file already exists, Unit asks per file:
+If a target file already exists, Unit asks per file:
 
 ```text
 append / overwrite / skip
@@ -74,89 +69,25 @@ append / overwrite / skip
 
 Press Enter to skip. `append` adds the generated content to the end of the existing file with a separator, so the user can review and merge it manually.
 
-Explicit modes:
+## Modes
 
 ```bash
 unit simple
 unit discovery
 unit advanced
-unit simple --here
-
-npm run start:simple
-npm run start:discovery
-npm run start:advanced
 ```
 
-Or:
-
-```bash
-npm start -- --mode simple
-npm start -- --mode discovery
-npm start -- --mode advanced
-```
-
-The CLI asks for a start mode:
-
-- Быстрый старт (`simple`): default path for most people. Minimal questions, one agent, no team files.
-- Сначала разобраться (`discovery`): guided product interview first, then generates project files from the discovered spec.
-- Расширенные настройки (`advanced`): choose scaffold, agent-team mode, skills, and extra setup.
+- `simple`: quick start, minimal questions, one agent, no team setup.
+- `discovery`: guided product interview first, then project files from the discovered spec.
+- `advanced`: scaffold choice, agent-team mode, skills, Superpowers recommendation, and git setup.
 
 Recommended first run:
 
-```text
-simple
+```bash
+unit simple
 ```
-
-It creates a small, readable project context so any agent can understand what the project is, what is protected, and what to do first.
 
 Every question includes a short hint and example, so the user does not need to understand agent tooling before starting.
-
-The starter can also capture references:
-
-- current site or project URL
-- competitor/example URL
-- what should be similar: structure, flow, form, cabinet, style, content model
-
-References are written into PRD and MEMORY as context for the agent. They are treated as inspiration, not as permission to copy protected text, branding, or design 1:1.
-
-In `advanced` mode it also asks for a project scaffold preset:
-
-- `auto`: infer from stack and discovery answers.
-- `agent-only`: only agent instructions and project-control files.
-- `node-cli`: minimal Node CLI source tree.
-- `webapp`: minimal web app source tree.
-- `python-app`: minimal Python app source tree.
-
-In `advanced` mode it can also ask how agent work should be organized:
-
-- `solo`: one agent owns the project flow. No team files are generated.
-- `team-lite`: orchestrator + implementer + reviewer files are generated.
-- `team-full`: discovery + architect + implementer + QA + reviewer + research files are generated.
-
-Use `solo` for small or unclear projects. Use team modes only when the project is large enough to benefit from delegation. `simple` and `discovery` always use `solo`.
-
-Advanced mode is for choosing a professional workflow, not just creating more files:
-
-- scaffold preset;
-- agent-team mode;
-- selected skills;
-- optional Superpowers recommendation;
-- git setup.
-
-Superpowers is not installed automatically. Unit can add it as a recommendation in `.skills/README.md` with a source link and a note to review installation instructions manually.
-
-After publishing or linking:
-
-```bash
-npx unit-agent-starter
-unit
-unit simple
-unit discovery
-unit advanced
-unit --mode simple
-unit --mode discovery
-unit --mode advanced
-```
 
 ## What It Creates
 
@@ -176,50 +107,16 @@ The CLI also asks whether to initialize git. If enabled, it runs `git init`, cre
 
 `NOTES.md` is a temporary inbox for agent output. The agent should not read it at the start of every session unless asked. It writes suggestions there; the human decides what to move into `PRD.md`, `MEMORY.md`, or `TASKS.md`.
 
-In `discovery` and `advanced` modes it can create the fuller project-control set:
-
-- `CLAUDE.md`, `AGENTS.md`, `MEMORY.md`, `TODO.md`
-- `.claude/settings.json` for Claude Code projects
-- `.codex/AGENTS.md` for Codex-oriented projects
-- `.gemini/GEMINI.md` for Gemini-oriented projects
-- `.evals/contract.md`
-- `.staging/notes.md`
-- `.logs/journal.md`
-- `.context/init.md`
-- `docs/PRD.md`
-- `docs/DISCOVERY.md` when using discovery mode
-- `docs/HOW_TO_MANAGE.md`
-- `.env.example`
-- `.gitignore`
-- optional starter source files based on the selected preset
-- optional `TEAM.md`, `.agents/roles/*`, and `.claude/agents/*` files when a team mode is selected
-
 ## Agent Profiles
 
 The CLI asks which executor profile to optimize for:
 
 - `codex`: uses `AGENTS.md` as the primary operating contract and adds Codex-oriented notes.
-- `claude`: uses `CLAUDE.md` plus `.claude/settings.json` guardrails.
+- `claude`: uses `CLAUDE.md` plus Claude Code guardrails.
 - `gemini`: creates Gemini-oriented project context under `.gemini/`.
 - `other`: creates a universal `AGENTS.md` for OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax, or another AI coding tool.
 
-## Safety Defaults
-
-Community skills are not downloaded automatically. The generated management guide keeps the rule that community skill contents must be inspected before installation.
-
-## Discovery Mode
-
-Discovery mode is based on the `discovery-interview` pattern: start from the problem and users, then clarify current workflow, target outcomes, first MVP flow, data/API needs, technical constraints, infrastructure, risks, and agent profile.
-
-The starter uses the answers to prefill:
-
-- PRD problem, solution, integrations, MVP criteria
-- MEMORY status, decisions, and constraints
-- TODO first implementation step
-- AGENTS/CLAUDE/GEMINI operating contracts
-- recommended skills, including `discovery-interview` when relevant
-
-## Skill Boosters
+## Skills
 
 The starter can recommend workflow skills without installing them blindly:
 
@@ -227,4 +124,134 @@ The starter can recommend workflow skills without installing them blindly:
 - `using-superpowers` / Superpowers: structured engineering workflow for brainstorming, planning, TDD, debugging, review, and verification.
 - `skill-creator`: creates project-specific skills after the first patterns are clear.
 
-Community skills should be inspected before installation. The starter records recommendations in `.skills/README.md`; the project owner decides what to install.
+Community skills should be inspected before installation. Unit records recommendations in `.skills/README.md`; the project owner decides what to install.
+
+## Russian Version / Русская версия
+
+# Unit Agent Starter
+
+Простой CLI-стартер, который создаёт PRD, память, задачи, заметки и инструкции для AI-агента в проектах с vibe coding и агентной разработкой.
+
+```bash
+npm install -g unit-agent-starter
+unit simple
+```
+
+Используй его, когда нужно, чтобы Codex, Claude, Gemini или другой AI-агент понял проект до того, как начнёт менять файлы.
+
+Это как пустой starter template для проектов под AI-агента: в новом репозитории сразу появляются базовые управляющие файлы.
+
+## Документация
+
+- [User Guide](docs/USER_GUIDE.md): простое объяснение созданных файлов и правил.
+- [Modes](docs/MODES.md): разница между `simple`, `discovery` и `advanced`.
+- [Discoverability Checklist](docs/DISCOVERABILITY.md): GitHub topics, запуск и продвижение проекта.
+
+Каждый документ начинается с английской версии, а внизу содержит русский перевод.
+
+## Глобальное использование
+
+Установка из этого репозитория во время разработки:
+
+```bash
+npm install -g .
+```
+
+После публикации в npm:
+
+```bash
+npm install -g unit-agent-starter
+```
+
+Запуск из любой папки:
+
+```bash
+unit
+```
+
+По умолчанию `unit` создаёт новую папку с названием проекта:
+
+```text
+projects/
+  my-new-project/
+    AGENTS.md
+    PRD.md
+    MEMORY.md
+    TASKS.md
+    NOTES.md
+```
+
+Сам стартер остаётся в глобальном хранилище npm и не копируется в созданный проект.
+
+Чтобы создать файлы прямо в текущей папке:
+
+```bash
+unit --here
+unit simple --here
+unit discovery --here
+```
+
+Если файл уже существует, Unit спросит по каждому файлу:
+
+```text
+append / overwrite / skip
+```
+
+Enter означает `skip`. `append` дописывает новый блок в конец файла через разделитель, чтобы человек сам посмотрел и объединил нужное.
+
+## Режимы
+
+```bash
+unit simple
+unit discovery
+unit advanced
+```
+
+- `simple`: быстрый старт, минимум вопросов, один агент, без команды агентов.
+- `discovery`: сначала интервью по продукту, потом генерация файлов проекта.
+- `advanced`: выбор каркаса, режим команды агентов, skills, рекомендация Superpowers и настройка git.
+
+Рекомендуемый первый запуск:
+
+```bash
+unit simple
+```
+
+У каждого вопроса есть короткая подсказка и пример, поэтому человеку не нужно заранее разбираться в агентных инструментах.
+
+## Что создаётся
+
+В режиме `simple`:
+
+- `AGENTS.md`, `CLAUDE.md` или `GEMINI.md` в зависимости от выбранного агента
+- `PRD.md`
+- `MEMORY.md`
+- `TASKS.md`
+- `NOTES.md`
+- `.skills/README.md`
+- `README.md`
+- `.env.example`
+- `.gitignore`
+
+CLI также спрашивает, нужно ли инициализировать git. Если да, он запускает `git init`, создаёт первый commit и использует ветку `main`.
+
+`NOTES.md` — временный inbox для вывода агента. Агент не должен читать его в начале каждой сессии без просьбы. Он пишет туда предложения, а человек решает, что переносить в `PRD.md`, `MEMORY.md` или `TASKS.md`.
+
+## Профили агентов
+
+CLI спрашивает, под какого исполнителя оптимизировать проект:
+
+- `codex`: использует `AGENTS.md` как главный рабочий контракт и добавляет заметки под Codex.
+- `claude`: использует `CLAUDE.md` и ограничения под Claude Code.
+- `gemini`: создаёт контекст проекта под Gemini в `.gemini/`.
+- `other`: создаёт универсальный `AGENTS.md` для OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax или другого AI-инструмента.
+
+## Skills
+
+Стартер может рекомендовать workflow skills, но не устанавливает их вслепую:
+
+- `discovery-interview`: превращает смутную идею проекта в понятное ТЗ.
+- `using-superpowers` / Superpowers: структурированный процесс разработки для brainstorming, planning, TDD, debugging, review и verification.
+- `skill-creator`: помогает создать проектные skills после того, как первые паттерны стали понятны.
+
+Community skills нужно просматривать перед установкой. Unit записывает рекомендации в `.skills/README.md`, а владелец проекта сам решает, что устанавливать.

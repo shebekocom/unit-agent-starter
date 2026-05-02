@@ -1,12 +1,362 @@
 # Unit Agent Starter — User Guide
 
-Unit создаёт простую папку проекта, чтобы AI-агент сразу понял:
+Unit creates a small project folder so an AI agent can immediately understand:
+
+- what is being built;
+- what must be remembered;
+- which task comes first;
+- where to write results;
+- which files must not be changed without explicit permission.
+
+## How To Use
+
+Install the starter globally:
+
+```bash
+npm install -g unit-agent-starter
+```
+
+Create a new project in a new folder:
+
+```bash
+unit simple
+```
+
+Create files directly in the current folder:
+
+```bash
+unit simple --here
+```
+
+If a target file already exists, Unit asks:
+
+```text
+append / overwrite / skip
+```
+
+- `append`: add the generated block to the end of the file.
+- `overwrite`: replace the file.
+- `skip`: keep the existing file unchanged.
+
+Enter means `skip`. This protects `MEMORY.md`, `TASKS.md`, and `PRD.md` from accidental overwrites.
+
+If you do not know what to choose, run:
+
+```bash
+unit
+```
+
+and press Enter for the quick start.
+
+## What Gets Created
+
+In `simple` mode:
+
+```text
+AGENTS.md / CLAUDE.md / GEMINI.md
+PRD.md
+MEMORY.md
+TASKS.md
+NOTES.md
+.skills/README.md
+README.md
+.env.example
+.gitignore
+```
+
+## Main Idea
+
+There are files for the human and files for the agent.
+
+The human manages the project:
+
+- changes the goal;
+- makes decisions;
+- updates memory;
+- moves tasks.
+
+The agent does the work:
+
+- reads instructions;
+- writes code;
+- asks questions;
+- writes results and proposals to `NOTES.md`.
+
+## AGENTS.md / CLAUDE.md / GEMINI.md
+
+This is the main instruction file for the agent.
+
+The exact file depends on the selected assistant:
+
+- `AGENTS.md`: Codex or a universal agent.
+- `CLAUDE.md`: Claude.
+- `GEMINI.md`: Gemini.
+
+It explains:
+
+- which files to read at the start;
+- what the agent may change;
+- what the agent must not change without a human command;
+- where the agent should write session notes.
+
+Main rule:
+
+```text
+The agent does not change PRD.md, MEMORY.md, or TASKS.md without an explicit human command.
+```
+
+## PRD.md
+
+`PRD.md` answers:
+
+```text
+What are we building?
+```
+
+It stores:
+
+- project description;
+- target users;
+- first useful result;
+- references;
+- stack;
+- integrations;
+- done criteria.
+
+Who edits it:
+
+```text
+Human.
+```
+
+The agent may suggest changes, but it writes them to `NOTES.md`. The human decides what to move into `PRD.md`.
+
+## MEMORY.md
+
+`MEMORY.md` answers:
+
+```text
+What must be remembered between sessions?
+```
+
+It stores:
+
+- important decisions;
+- constraints;
+- what worked;
+- what did not work;
+- questions that must not be forgotten.
+
+Who edits it:
+
+```text
+Human.
+```
+
+Why the agent does not write here directly:
+
+- memory must stay short;
+- the agent can be wrong;
+- the human decides what is important enough to save.
+
+The agent writes memory proposals to `NOTES.md`. The human decides what to move into `MEMORY.md`.
+
+## TASKS.md
+
+`TASKS.md` answers:
+
+```text
+What should be done?
+```
+
+It contains:
+
+- `Now`: the first task for the agent;
+- `Next`: upcoming tasks;
+- `Done`: completed tasks.
+
+Who edits it:
+
+```text
+Human.
+```
+
+Why the agent does not move tasks by itself:
+
+- the human owns priorities;
+- the agent may call something done too early;
+- the result should be accepted manually.
+
+The agent proposes new tasks through `NOTES.md`. The human decides what to add to `TASKS.md`.
+
+## NOTES.md
+
+`NOTES.md` is a temporary inbox for the agent, not long-term project memory.
+
+The agent writes:
+
+- what it completed;
+- what should be checked;
+- what questions remain;
+- what should be moved to `PRD.md`;
+- what should be moved to `MEMORY.md`;
+- what should be added to `TASKS.md`.
+
+Who edits it:
+
+```text
+Agent and human.
+```
+
+The agent does not read `NOTES.md` at the start of every session unless the human asks. For context, it reads `PRD.md`, `MEMORY.md`, and `TASKS.md`.
+
+After the agent works, the human reads `NOTES.md`, moves important information into the right files, and removes outdated notes. This prevents `NOTES.md` from growing forever and keeps prompt context small.
+
+## .skills/README.md
+
+`.skills/README.md` explains which extra skills may be useful for the agent.
+
+Skills are not downloaded automatically.
+
+Why:
+
+- community skills may contain unexpected instructions;
+- the human should inspect the source first;
+- the project should not become complex without a reason.
+
+Typical recommendations:
+
+- `discovery-interview`;
+- `skill-creator`;
+- `frontend-design`;
+- `webapp-testing`;
+- `using-superpowers`.
+
+## Where Restrictions Are Written
+
+Restrictions are written in two places.
+
+First place: the main agent file:
+
+```text
+AGENTS.md / CLAUDE.md / GEMINI.md
+```
+
+It has a section like:
+
+```text
+Do not change without an explicit human command
+```
+
+Second place: the header of each protected file:
+
+```text
+PRD.md
+MEMORY.md
+TASKS.md
+```
+
+For example, `MEMORY.md` says:
+
+```text
+Who edits this file: human.
+The agent does NOT change this file directly.
+The agent writes memory proposals to NOTES.md.
+```
+
+## First Prompt For The Agent
+
+After creating the project, send this to the agent:
+
+```text
+Read AGENTS.md, PRD.md, MEMORY.md, and TASKS.md.
+Confirm what we are building, what must be remembered, and which task you will take first.
+Do not read NOTES.md at the start of the session unless I ask.
+After the work, write results and proposals to NOTES.md.
+```
+
+If you selected Claude, use `CLAUDE.md` instead of `AGENTS.md`.
+
+If you selected Gemini, use `GEMINI.md` instead of `AGENTS.md`.
+
+## Ending A Session
+
+After the agent replies:
+
+1. Open `NOTES.md`.
+2. Move important decisions to `MEMORY.md`.
+3. Move new or changed tasks to `TASKS.md`.
+4. If the product goal changed, update `PRD.md`.
+5. Remove outdated notes from `NOTES.md` after they are moved.
+6. If git is enabled, commit the result.
+
+## Why It Stays Simple
+
+Unit is not trying to be a large agent framework.
+
+It creates the smallest useful set of files:
+
+- so the agent understands the project;
+- so the human owns decisions;
+- so project memory is not lost;
+- so work can continue in another AI agent.
+
+Main principle:
+
+```text
+The agent works. The human manages memory and tasks.
+```
+
+## Discovery And Advanced
+
+For mode details, see [MODES.md](MODES.md).
+
+`discovery` is useful when the idea is still unclear. It helps collect the initial understanding of the project and prepares the agent for better follow-up questions.
+
+`advanced` is useful when you want to choose the development process:
+
+- create a code scaffold;
+- choose agent work mode;
+- add skill recommendations;
+- include a methodology such as Superpowers;
+- configure git.
+
+Advanced does not have to be complicated. Its purpose is to give experienced users more control.
+
+## Superpowers
+
+Superpowers is an external project and agentic development methodology:
+
+```text
+https://github.com/obra/superpowers
+```
+
+Unit can add Superpowers as a recommendation, but it does not install it automatically.
+
+Use Superpowers when the project is serious enough to need:
+
+- brainstorming;
+- planning;
+- TDD;
+- code review;
+- verification;
+- subagent workflows.
+
+For a simple start, Superpowers is not required. `PRD.md`, `MEMORY.md`, `TASKS.md`, and `NOTES.md` are enough.
+
+---
+
+## Russian Version / Русская версия
+
+# Unit Agent Starter — руководство пользователя
+
+Unit создаёт небольшую папку проекта, чтобы AI-агент сразу понял:
 
 - что строим;
 - что важно помнить;
 - какую задачу делать первой;
 - куда писать итоги;
-- какие файлы нельзя менять без разрешения.
+- какие файлы нельзя менять без явного разрешения.
 
 ## Как пользоваться
 
@@ -34,9 +384,9 @@ unit simple --here
 append / overwrite / skip
 ```
 
-- `append` — дописать новый блок в конец файла;
-- `overwrite` — перезаписать файл;
-- `skip` — пропустить файл.
+- `append`: дописать новый блок в конец файла.
+- `overwrite`: перезаписать файл.
+- `skip`: оставить существующий файл без изменений.
 
 Enter означает `skip`. Это защищает `MEMORY.md`, `TASKS.md` и `PRD.md` от случайной перезаписи.
 
@@ -50,7 +400,7 @@ unit
 
 ## Что создаётся
 
-В простом режиме (`simple`) создаются:
+В режиме `simple`:
 
 ```text
 AGENTS.md / CLAUDE.md / GEMINI.md
@@ -80,7 +430,7 @@ README.md
 - читает инструкции;
 - пишет код;
 - задаёт вопросы;
-- пишет итоги в `NOTES.md`.
+- пишет итоги и предложения в `NOTES.md`.
 
 ## AGENTS.md / CLAUDE.md / GEMINI.md
 
@@ -88,9 +438,9 @@ README.md
 
 Какой файл создаётся, зависит от выбранного помощника:
 
-- `AGENTS.md` — Codex или универсальный агент;
-- `CLAUDE.md` — Claude;
-- `GEMINI.md` — Gemini.
+- `AGENTS.md`: Codex или универсальный агент.
+- `CLAUDE.md`: Claude.
+- `GEMINI.md`: Gemini.
 
 В этом файле написано:
 
@@ -102,7 +452,7 @@ README.md
 Главное правило:
 
 ```text
-Агент не меняет PRD.md, MEMORY.md и TASKS.md без явной команды.
+Агент не меняет PRD.md, MEMORY.md и TASKS.md без явной команды человека.
 ```
 
 ## PRD.md
@@ -117,7 +467,7 @@ README.md
 
 - описание проекта;
 - для кого проект;
-- первый результат;
+- первый полезный результат;
 - референсы;
 - стек;
 - интеграции;
@@ -171,9 +521,9 @@ README.md
 
 В нём есть:
 
-- `Сейчас` — первая задача для агента;
-- `Потом` — следующие задачи;
-- `Сделано` — выполненные задачи.
+- `Сейчас`: первая задача для агента;
+- `Потом`: следующие задачи;
+- `Сделано`: выполненные задачи.
 
 Кто редактирует:
 
@@ -198,10 +548,9 @@ README.md
 - что сделал;
 - что проверить;
 - какие вопросы остались;
-- что предложить человеку перенести в `PRD.md`;
-- что предложить человеку перенести в `MEMORY.md`;
-- что предложить человеку добавить в `TASKS.md`;
-- какие изменения предложить для `PRD.md`.
+- что предложить перенести в `PRD.md`;
+- что предложить перенести в `MEMORY.md`;
+- что предложить добавить в `TASKS.md`.
 
 Кто редактирует:
 
@@ -225,12 +574,13 @@ Skills не скачиваются автоматически.
 - человек должен сначала посмотреть источник;
 - проект не должен усложняться без необходимости.
 
-Обычно там будут рекомендации вроде:
+Обычно там будут рекомендации:
 
 - `discovery-interview`;
 - `skill-creator`;
 - `frontend-design`;
-- `webapp-testing`.
+- `webapp-testing`;
+- `using-superpowers`.
 
 ## Где прописаны ограничения
 
@@ -242,7 +592,7 @@ Skills не скачиваются автоматически.
 AGENTS.md / CLAUDE.md / GEMINI.md
 ```
 
-Там есть раздел:
+Там есть раздел вроде:
 
 ```text
 Что нельзя менять без явной команды человека
@@ -307,7 +657,7 @@ Unit не пытается быть большим агентным фреймв
 Агент работает. Человек управляет памятью и задачами.
 ```
 
-## Чем advanced отличается от discovery
+## Discovery и Advanced
 
 Подробнее о режимах см. [MODES.md](MODES.md).
 

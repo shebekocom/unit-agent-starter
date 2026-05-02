@@ -10,7 +10,7 @@ advanced
 
 ## Simple
 
-`simple` is for quickly creating a clear project memory for one AI agent.
+`simple` quickly creates clear project memory for one AI agent.
 
 Use it when:
 
@@ -42,13 +42,13 @@ simple
 
 ## Discovery
 
-`discovery` is for figuring out what should be built.
+`discovery` helps figure out what should be built.
 
 Use it when:
 
 - the idea is still vague;
 - you need to clarify the problem;
-- you want to define users and MVP flow;
+- you want to define users and the MVP flow;
 - you want the agent to ask better questions.
 
 It still keeps the generated project simple. The goal is not to create more files, but to create better initial context.
@@ -62,7 +62,7 @@ discovery
 
 ## Advanced
 
-`advanced` is for professional agent-development workflow setup.
+`advanced` configures a professional agent-development workflow.
 
 Use it when:
 
@@ -70,7 +70,7 @@ Use it when:
 - you want to choose a code scaffold;
 - you want multiple agent roles;
 - you want skills and methodology recommendations;
-- you want stricter development process.
+- you want a stricter development process.
 
 Advanced can configure:
 
@@ -94,7 +94,7 @@ configure the development process
 
 Advanced can include:
 
-- orchestration of agents;
+- agent orchestration;
 - team-lite or team-full roles;
 - selected skills;
 - external methodology such as Superpowers;
@@ -132,4 +132,144 @@ discovery
 
 advanced
 → configure development process: agents + skills + methodology
+```
+
+---
+
+## Russian Version / Русская версия
+
+# Режимы
+
+В Unit есть три режима:
+
+```text
+simple
+discovery
+advanced
+```
+
+## Simple
+
+`simple` быстро создаёт понятную память проекта для одного AI-агента.
+
+Используй его, когда:
+
+- нужен минимальный полезный старт;
+- уже есть примерное понимание идеи;
+- нужно, чтобы агент начал безопасно;
+- пока не нужна оркестрация или дополнительная методология.
+
+Создаёт:
+
+```text
+AGENTS.md / CLAUDE.md / GEMINI.md
+PRD.md
+MEMORY.md
+TASKS.md
+NOTES.md
+.skills/README.md
+README.md
+.env.example
+.gitignore
+```
+
+Смысл:
+
+```text
+simple
+→ быстро создать понятную память проекта
+```
+
+## Discovery
+
+`discovery` помогает понять, что именно нужно построить.
+
+Используй его, когда:
+
+- идея ещё расплывчатая;
+- нужно уточнить проблему;
+- нужно определить пользователей и MVP-flow;
+- хочется, чтобы агент задавал более точные вопросы.
+
+Созданный проект всё равно остаётся простым. Цель — не создать больше файлов, а создать лучший начальный контекст.
+
+Смысл:
+
+```text
+discovery
+→ понять, что мы строим
+```
+
+## Advanced
+
+`advanced` настраивает профессиональный процесс агентной разработки.
+
+Используй его, когда:
+
+- проект крупнее;
+- нужно выбрать каркас кода;
+- нужны несколько ролей агентов;
+- нужны рекомендации по skills и методологии;
+- нужен более строгий процесс разработки.
+
+Advanced может настроить:
+
+```text
+каркас проекта
+режим команды агентов
+skills
+рекомендацию Superpowers
+git
+```
+
+## Advanced — это процесс
+
+`advanced` не означает "усложнить проект".
+
+Он означает:
+
+```text
+настроить процесс разработки
+```
+
+Advanced может включать:
+
+- оркестрацию агентов;
+- роли team-lite или team-full;
+- выбранные skills;
+- внешнюю методологию вроде Superpowers;
+- более строгий review и verification workflow.
+
+## Superpowers
+
+Superpowers — внешний фреймворк agentic skills и методология разработки:
+
+```text
+https://github.com/obra/superpowers
+```
+
+Он может помочь с:
+
+- brainstorming;
+- planning;
+- TDD;
+- code review;
+- verification;
+- subagent workflows.
+
+Unit не устанавливает Superpowers автоматически.
+
+В `advanced` Unit может добавить Superpowers как рекомендацию в `.skills/README.md`, чтобы владелец проекта сам посмотрел и установил его под своего агента.
+
+## Кратко
+
+```text
+simple
+→ быстро создать понятную память проекта
+
+discovery
+→ понять, что мы строим
+
+advanced
+→ настроить процесс разработки: агенты + skills + методология
 ```
