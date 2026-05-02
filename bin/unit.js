@@ -927,6 +927,52 @@ function twoSpaces() {
   return 2;
 }
 
+const useColor = output.isTTY && !process.env.NO_COLOR;
+const color = {
+  bold: (text) => useColor ? `\x1b[1m${text}\x1b[0m` : text,
+  dim: (text) => useColor ? `\x1b[2m${text}\x1b[0m` : text,
+  green: (text) => useColor ? `\x1b[32m${text}\x1b[0m` : text,
+  cyan: (text) => useColor ? `\x1b[36m${text}\x1b[0m` : text,
+  yellow: (text) => useColor ? `\x1b[33m${text}\x1b[0m` : text,
+  red: (text) => useColor ? `\x1b[31m${text}\x1b[0m` : text
+};
+
+function divider() {
+  return color.dim("────────────────────────────────────────");
+}
+
+function section(title, subtitle = "") {
+  console.log(`\n${divider()}`);
+  console.log(color.bold(title));
+  if (subtitle) console.log(color.dim(subtitle));
+  console.log(divider());
+}
+
+function formatQuestion(title, { hint = "", choices = [], defaultValue = "", freeText = false } = {}) {
+  const lines = ["", color.bold(title)];
+  if (hint) lines.push(color.dim(`Подсказка: ${hint}`));
+  for (const choice of choices) {
+    lines.push(`${color.cyan(`${choice.value}.`)} ${choice.label}`);
+  }
+  if (defaultValue) lines.push(color.dim(`Enter = ${defaultValue}`));
+  lines.push(freeText ? color.green("Напиши ответ:") : color.green("Выбери номер:"));
+  lines.push("> ");
+  return lines.join("\n");
+}
+
+function splitPrompt(text) {
+  const [title, ...rest] = text.split("\nПодсказка:");
+  return {
+    title: title.trim(),
+    hint: rest.join("\nПодсказка:").trim()
+  };
+}
+
+function promptText(text, options = {}) {
+  const { title, hint } = splitPrompt(text);
+  return formatQuestion(title, { hint, ...options });
+}
+
 async function exists(target) {
   try {
     await fs.access(target);
@@ -938,18 +984,20 @@ async function exists(target) {
 
 async function askExistingFileAction(rl, relativePath) {
   while (true) {
-    const answer = (await rl.question(`Файл уже существует: ${relativePath}
-Что сделать?
-1. Append — дописать новый блок в конец файла
-2. Overwrite — перезаписать файл
-3. Skip — оставить как есть
-Подсказка: Enter = skip, чтобы не потерять данные.
-> `)).trim().toLowerCase() || "skip";
+    const answer = (await rl.question(formatQuestion(`Файл уже существует: ${relativePath}`, {
+      hint: "Enter = skip, чтобы не потерять данные.",
+      choices: [
+        { value: "1", label: "Append — дописать новый блок в конец файла" },
+        { value: "2", label: "Overwrite — перезаписать файл" },
+        { value: "3", label: "Skip — оставить как есть" }
+      ],
+      defaultValue: "3. Skip"
+    }))).trim().toLowerCase() || "skip";
 
     if (["1", "append", "a", "дописать"].includes(answer)) return "append";
     if (["2", "overwrite", "o", "перезаписать"].includes(answer)) return "overwrite";
     if (["3", "skip", "s", "пропустить"].includes(answer)) return "skip";
-    console.log("Выбери 1, 2 или 3.");
+    console.log(color.red("Выбери 1, 2 или 3."));
   }
 }
 
@@ -1024,14 +1072,17 @@ async function createPrompt() {
 
 async function askRequired(rl, question, transform = (value) => value.trim()) {
   while (true) {
-    const answer = transform(await rl.question(`${question}\n> `));
+    const answer = transform(await rl.question(promptText(question, { freeText: true })));
     if (answer) return answer;
-    console.log("Нужен ответ, чтобы продолжить.");
+    console.log(color.red("Нужен ответ, чтобы продолжить."));
   }
 }
 
 async function askOptional(rl, question, fallback = "нет") {
-  const answer = (await rl.question(`${question}\n> `)).trim();
+  const answer = (await rl.question(promptText(question, {
+    freeText: true,
+    defaultValue: fallback
+  }))).trim();
   return answer || fallback;
 }
 
@@ -1045,24 +1096,36 @@ function normalizeYesNo(value, fallback = null) {
 
 async function askYesNo(rl, question, fallback = null) {
   while (true) {
-    const answer = normalizeYesNo(await rl.question(question), fallback);
+    const text = typeof question === "string"
+      ? question
+      : formatQuestion(question.title, {
+        hint: question.hint,
+        choices: [
+          { value: "1", label: question.yesLabel ?? "Yes" },
+          { value: "2", label: question.noLabel ?? "No" }
+        ],
+        defaultValue: fallback === true ? "1. Yes" : fallback === false ? "2. No" : ""
+      });
+    const answer = normalizeYesNo(await rl.question(text), fallback);
     if (answer !== null) return answer;
-    console.log("Выбери 1 или 2.");
+    console.log(color.red("Выбери 1 или 2."));
   }
 }
 
 async function askAgentProfile(rl) {
   while (true) {
-    const answer = (await rl.question(`С каким AI-помощником будешь работать? (agent profile)
-1. Codex (codex)
-2. Claude (claude)
-3. Gemini (gemini)
-4. Другой AI / IDE (other)
-Подсказка: выбирай other, если используешь OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax или не уверен.
-> `)).trim().toLowerCase();
+    const answer = (await rl.question(formatQuestion("С каким AI-помощником будешь работать? (agent profile)", {
+      hint: "Выбирай other, если используешь OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax или не уверен.",
+      choices: [
+        { value: "1", label: "Codex (codex)" },
+        { value: "2", label: "Claude (claude)" },
+        { value: "3", label: "Gemini (gemini)" },
+        { value: "4", label: "Другой AI / IDE (other)" }
+      ]
+    }))).trim().toLowerCase();
     const normalized = normalizeAgentProfile(answer);
     if (normalized) return normalized;
-    console.log("Выбери один вариант: codex, claude, gemini или other.");
+    console.log(color.red("Выбери 1, 2, 3 или 4."));
   }
 }
 
@@ -1083,16 +1146,18 @@ async function askStarterMode(rl) {
   if (cliMode) return cliMode;
 
   while (true) {
-    const answer = (await rl.question(`Как стартуем?
-1. Быстрый старт (simple) — один AI-помощник, минимум вопросов
-2. Сначала разобраться (discovery) — вопросы и первичный PRD
-3. Расширенные настройки (advanced) — каркас, команды агентов, skills
-Нажми Enter для быстрого старта (simple).
-> `)).trim().toLowerCase() || "simple";
+    const answer = (await rl.question(formatQuestion("Как стартуем?", {
+      choices: [
+        { value: "1", label: "Быстрый старт (simple) — один AI-помощник, минимум вопросов" },
+        { value: "2", label: "Сначала разобраться (discovery) — вопросы и первичный PRD" },
+        { value: "3", label: "Расширенные настройки (advanced) — каркас, команды агентов, skills" }
+      ],
+      defaultValue: "1. Simple"
+    }))).trim().toLowerCase() || "simple";
     const normalized = normalizeMode(answer);
     if (normalized) return normalized;
     if (STARTER_MODES.has(answer)) return answer;
-    console.log("Выбери 1, 2, 3 или напиши simple, discovery, advanced.");
+    console.log(color.red("Выбери 1, 2, 3 или напиши simple, discovery, advanced."));
   }
 }
 
@@ -1126,17 +1191,19 @@ function normalizeMode(value) {
 async function askStarterPreset(rl, stack, projectType = "") {
   const inferred = inferPreset(stack, projectType);
   while (true) {
-    const answer = (await rl.question(`Какой каркас проекта создать? (project scaffold)
-1. Auto (${inferred}) — выбрать по стеку и ответам
-2. Agent only — только инструкции для агента, без кода
-3. Node CLI — минимальный каркас npm/CLI
-4. Web app — минимальный каркас веб-приложения
-5. Python app — минимальный каркас Python-приложения
-Нажми Enter для Auto.
-> `)).trim().toLowerCase() || "auto";
+    const answer = (await rl.question(formatQuestion("Какой каркас проекта создать? (project scaffold)", {
+      choices: [
+        { value: "1", label: `Auto (${inferred}) — выбрать по стеку и ответам` },
+        { value: "2", label: "Agent only — только инструкции для агента, без кода" },
+        { value: "3", label: "Node CLI — минимальный каркас npm/CLI" },
+        { value: "4", label: "Web app — минимальный каркас веб-приложения" },
+        { value: "5", label: "Python app — минимальный каркас Python-приложения" }
+      ],
+      defaultValue: "1. Auto"
+    }))).trim().toLowerCase() || "auto";
     const normalized = normalizeStarterPreset(answer);
     if (normalized) return normalized;
-    console.log("Выбери 1-5 или напиши auto, agent-only, node-cli, webapp, python-app.");
+    console.log(color.red("Выбери 1-5 или напиши auto, agent-only, node-cli, webapp, python-app."));
   }
 }
 
@@ -1154,15 +1221,17 @@ function normalizeStarterPreset(value) {
 
 async function askCollaborationMode(rl) {
   while (true) {
-    const answer = (await rl.question(`Как организовать агентную работу? (agent workflow)
-1. Solo — один агент и меньше файлов
-2. Team lite — оркестратор, исполнитель, reviewer
-3. Team full — discovery, architect, implementer, QA, reviewer, research
-Нажми Enter для Solo.
-> `)).trim().toLowerCase() || "solo";
+    const answer = (await rl.question(formatQuestion("Как организовать агентную работу? (agent workflow)", {
+      choices: [
+        { value: "1", label: "Solo — один агент и меньше файлов" },
+        { value: "2", label: "Team lite — оркестратор, исполнитель, reviewer" },
+        { value: "3", label: "Team full — discovery, architect, implementer, QA, reviewer, research" }
+      ],
+      defaultValue: "1. Solo"
+    }))).trim().toLowerCase() || "solo";
     const normalized = normalizeCollaborationMode(answer);
     if (normalized) return normalized;
-    console.log("Выбери 1, 2, 3 или напиши solo, team-lite, team-full.");
+    console.log(color.red("Выбери 1, 2, 3 или напиши solo, team-lite, team-full."));
   }
 }
 
@@ -1490,11 +1559,11 @@ async function runQuickInterview(rl, projectName) {
 }
 
 async function askReferences(rl) {
-  const hasReference = await askYesNo(rl, `Есть сайт, пример или конкурент, на который нужно ориентироваться?
-1. Yes — добавить референс в PRD
-2. No — пропустить
-Нажми Enter для No.
-> `, false);
+  const hasReference = await askYesNo(rl, {
+    title: "Есть сайт, пример или конкурент, на который нужно ориентироваться?",
+    yesLabel: "Yes — добавить референс в PRD",
+    noLabel: "No — пропустить"
+  }, false);
 
   if (!hasReference) {
     return null;
@@ -1512,15 +1581,16 @@ async function askReferences(rl) {
 }
 
 async function askGitInit(rl) {
-  return askYesNo(rl, `Создать сохранение истории изменений? (git)
-1. Yes — git init и первый commit, чтобы можно было откатиться
-2. No — просто создать файлы
-Нажми Enter для No.
-> `, false);
+  return askYesNo(rl, {
+    title: "Создать сохранение истории изменений? (git)",
+    hint: "Yes — git init и первый commit, чтобы можно было откатиться.",
+    yesLabel: "Yes — git init и первый commit",
+    noLabel: "No — просто создать файлы"
+  }, false);
 }
 
 async function runSimpleInterview(rl, projectName) {
-  console.log("\nSimple Start: минимум вопросов, чтобы агент понял проект и первую задачу.\n");
+  section("Simple Start", "Минимум вопросов, чтобы агент понял проект и первую задачу.");
   const product = await askRequired(rl, "2. Что это за проект? Одним-двумя предложениями.\nПодсказка: например 'бот для записи клиентов' или 'сайт для портфолио'.");
   const users = await askOptional(rl, "3. Для кого он?\nПодсказка: кто будет пользоваться: я, клиенты, менеджеры, команда.", "уточнить позже");
   const firstGoal = await askRequired(rl, "4. Что агент должен сделать первым?\nПодсказка: конкретный первый результат. Например: создать структуру, написать MVP, проверить текущий код.");
@@ -1553,17 +1623,21 @@ async function runSimpleInterview(rl, projectName) {
 }
 
 async function askSkills(rl, suggested) {
-  console.log("\nРекомендованные skills, которые подходят по ответам:");
-  for (const skill of suggested) console.log(`- ${skill}`);
-  console.log("\nЧто добавить в .skills/README.md?");
-  console.log("1. All — добавить все рекомендации");
-  console.log("2. None — ничего не добавлять");
-  console.log("3. Custom — указать список через запятую");
-  const answer = (await rl.question("> ")).trim().toLowerCase();
+  section("Skills", `Рекомендовано: ${suggested.join(", ")}`);
+  const answer = (await rl.question(formatQuestion("Что добавить в .skills/README.md?", {
+    choices: [
+      { value: "1", label: "All — добавить все рекомендации" },
+      { value: "2", label: "None — ничего не добавлять" },
+      { value: "3", label: "Custom — указать список через запятую" }
+    ],
+    defaultValue: "2. None"
+  }))).trim().toLowerCase();
   if (!answer || answer === "2" || answer === "none" || answer === "нет") return [];
   if (answer === "1" || answer === "all" || answer === "все") return suggested;
   if (answer === "3" || answer === "custom" || answer === "свой") {
-    const custom = (await rl.question("Перечисли skills через запятую\n> ")).trim().toLowerCase();
+    const custom = (await rl.question(formatQuestion("Перечисли skills через запятую", {
+      freeText: true
+    }))).trim().toLowerCase();
     return custom
       .split(",")
       .map((item) => item.trim())
@@ -1576,9 +1650,11 @@ async function askSkills(rl, suggested) {
 }
 
 async function askCustomSkills(rl) {
-  console.log("\nСоздать записи о кастомных skills под проект?");
-  console.log("Например: apis, docker, clickhouse, telegram, billing.");
-  const answer = (await rl.question('Перечисли через запятую или напиши "нет"\n> ')).trim().toLowerCase();
+  const answer = (await rl.question(formatQuestion("Создать записи о кастомных skills под проект?", {
+    hint: 'Например: apis, docker, clickhouse, telegram, billing. Напиши "нет", если не нужно.',
+    freeText: true,
+    defaultValue: "нет"
+  }))).trim().toLowerCase();
   if (!answer || answer === "нет" || answer === "none") return [];
   return answer
     .split(",")
@@ -1587,21 +1663,22 @@ async function askCustomSkills(rl) {
 }
 
 async function askSuperpowersRecommendation(rl) {
-  return askYesNo(rl, `Добавить рекомендацию Superpowers? (advanced methodology)
-1. Yes — добавить ссылку и объяснение в .skills/README.md
-2. No — не добавлять
-Ничего не скачивается и не устанавливается.
-Нажми Enter для No.
-> `, false);
+  return askYesNo(rl, {
+    title: "Добавить рекомендацию Superpowers? (advanced methodology)",
+    hint: "Ничего не скачивается и не устанавливается.",
+    yesLabel: "Yes — добавить ссылку и объяснение в .skills/README.md",
+    noLabel: "No — не добавлять"
+  }, false);
 }
 
 async function askRecommendedSkillsSimple(rl, suggested) {
-  console.log("\nДобавить подсказки для агента? (skills)");
-  console.log(`Рекомендовано: ${suggested.join(", ")}`);
-  console.log("1. Yes — добавить рекомендации в .skills/README.md");
-  console.log("2. No — не добавлять");
-  console.log("Сами skills не скачиваются. Нажми Enter для Yes.");
-  return await askYesNo(rl, "> ", true) ? suggested : [];
+  section("Skills", `Рекомендовано: ${suggested.join(", ")}`);
+  return await askYesNo(rl, {
+    title: "Добавить подсказки для агента? (skills)",
+    hint: "Сами skills не скачиваются.",
+    yesLabel: "Yes — добавить рекомендации в .skills/README.md",
+    noLabel: "No — не добавлять"
+  }, true) ? suggested : [];
 }
 
 async function main() {
@@ -1615,7 +1692,7 @@ async function main() {
   const rl = await createPrompt();
 
   try {
-    console.log("Unit Agent Starter\nЗадаю вопросы по одному и создаю проектную папку.\n");
+    section("Unit Agent Starter", "Задаю вопросы по одному и создаю проектную папку.");
 
     const rawProjectName = await askRequired(
       rl,
@@ -1678,12 +1755,12 @@ async function main() {
 
     const gitResult = shouldInitGit ? await maybeGitInit(projectRoot) : "git skipped by user";
 
-    console.log(`\n✅ Проект ${projectName} инициализирован`);
-    console.log(`Папка: ${projectRoot}`);
-    console.log(`Создание: ${createHere ? "в текущей папке (--here)" : "в новой папке проекта"}`);
-    console.log(`Профиль агента: ${agentProfile}`);
-    console.log(`Скиллы: ${installedSummary(selectedSkills, customSkills)}`);
-    console.log(`Git: ${gitResult}`);
+    section(`Проект ${projectName} инициализирован`, "Готово. Ниже краткий итог и первый prompt для агента.");
+    console.log(`${color.cyan("Папка:")} ${projectRoot}`);
+    console.log(`${color.cyan("Создание:")} ${createHere ? "в текущей папке (--here)" : "в новой папке проекта"}`);
+    console.log(`${color.cyan("Профиль агента:")} ${agentProfile}`);
+    console.log(`${color.cyan("Скиллы:")} ${installedSummary(selectedSkills, customSkills)}`);
+    console.log(`${color.cyan("Git:")} ${gitResult}`);
     if (writeResult.overwritten.length) {
       console.log(`Перезаписано файлов: ${writeResult.overwritten.length}`);
     }
@@ -1693,8 +1770,8 @@ async function main() {
     if (writeResult.skipped.length) {
       console.log(`Пропущено файлов: ${writeResult.skipped.length}`);
     }
-    console.log("\nПервый промпт для следующей сессии:");
-    console.log("────────────────────────────────────");
+    console.log(`\n${color.bold("Первый промпт для следующей сессии:")}`);
+    console.log(divider());
     if (mode !== "advanced") {
       console.log(`Прочитай ${simpleAgentFileName(agentProfile)}, PRD.md, MEMORY.md и TASKS.md.`);
       console.log("Подтверди: что строим, что важно помнить, и какую задачу берёшь первой.");
@@ -1713,7 +1790,7 @@ async function main() {
       console.log("ссылки на сайт/конкурентов, старые ТЗ, заметки, API, тексты, маркетинг, ограничения.");
       console.log("Когда я пришлю материалы, разбери их и предложи, что добавить в docs/PRD.md, MEMORY.md, TODO.md и .staging/notes.md.");
     }
-    console.log("────────────────────────────────────");
+    console.log(divider());
   } finally {
     rl.close();
   }
