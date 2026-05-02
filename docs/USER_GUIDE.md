@@ -48,6 +48,16 @@ unit
 
 and press Enter for the quick start.
 
+For menu questions, you can choose by number. For example:
+
+```text
+1. Simple
+2. Discovery
+3. Advanced
+```
+
+You can press `1`, `2`, or `3` instead of typing the full word.
+
 ## What Gets Created
 
 In `simple` mode:
@@ -397,6 +407,16 @@ unit
 ```
 
 и нажимай Enter для быстрого старта.
+
+В вопросах с меню можно выбирать цифрами. Например:
+
+```text
+1. Simple
+2. Discovery
+3. Advanced
+```
+
+Можно нажать `1`, `2` или `3`, не вводя слово целиком.
 
 ## Что создаётся
 

@@ -8,6 +8,14 @@ discovery
 advanced
 ```
 
+In the interactive CLI, these modes can be selected by number:
+
+```text
+1. Simple
+2. Discovery
+3. Advanced
+```
+
 ## Simple
 
 `simple` quickly creates clear project memory for one AI agent.
@@ -146,6 +154,14 @@ advanced
 simple
 discovery
 advanced
+```
+
+В интерактивном CLI эти режимы можно выбрать цифрами:
+
+```text
+1. Simple
+2. Discovery
+3. Advanced
 ```
 
 ## Simple

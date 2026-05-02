@@ -929,6 +929,22 @@ async function askOptional(rl, question, fallback = "нет") {
   return answer || fallback;
 }
 
+function normalizeYesNo(value, fallback = null) {
+  const normalized = (value ?? "").trim().toLowerCase();
+  if (!normalized && fallback !== null) return fallback;
+  if (["1", "yes", "y", "да", "д"].includes(normalized)) return true;
+  if (["2", "no", "n", "нет", "н"].includes(normalized)) return false;
+  return null;
+}
+
+async function askYesNo(rl, question, fallback = null) {
+  while (true) {
+    const answer = normalizeYesNo(await rl.question(question), fallback);
+    if (answer !== null) return answer;
+    console.log("Выбери 1 или 2.");
+  }
+}
+
 async function askAgentProfile(rl) {
   while (true) {
     const answer = (await rl.question(`С каким AI-помощником будешь работать? (agent profile)
@@ -970,7 +986,7 @@ async function askStarterMode(rl) {
     const normalized = normalizeMode(answer);
     if (normalized) return normalized;
     if (STARTER_MODES.has(answer)) return answer;
-    console.log("Выбери simple, discovery или advanced.");
+    console.log("Выбери 1, 2, 3 или напиши simple, discovery, advanced.");
   }
 }
 
@@ -1004,22 +1020,54 @@ function normalizeMode(value) {
 async function askStarterPreset(rl, stack, projectType = "") {
   const inferred = inferPreset(stack, projectType);
   while (true) {
-    const answer = (await rl.question(`Какой каркас проекта создать? auto (${inferred}) / agent-only / node-cli / webapp / python-app
-Подсказка: agent-only — только инструкции для агента; остальные варианты добавляют минимальный кодовый скелет.
+    const answer = (await rl.question(`Какой каркас проекта создать? (project scaffold)
+1. Auto (${inferred}) — выбрать по стеку и ответам
+2. Agent only — только инструкции для агента, без кода
+3. Node CLI — минимальный каркас npm/CLI
+4. Web app — минимальный каркас веб-приложения
+5. Python app — минимальный каркас Python-приложения
+Нажми Enter для Auto.
 > `)).trim().toLowerCase() || "auto";
-    if (STARTER_PRESETS.has(answer)) return answer;
-    console.log("Выбери: auto, agent-only, node-cli, webapp или python-app.");
+    const normalized = normalizeStarterPreset(answer);
+    if (normalized) return normalized;
+    console.log("Выбери 1-5 или напиши auto, agent-only, node-cli, webapp, python-app.");
   }
+}
+
+function normalizeStarterPreset(value) {
+  if (!value) return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "1") return "auto";
+  if (normalized === "2") return "agent-only";
+  if (normalized === "3") return "node-cli";
+  if (normalized === "4") return "webapp";
+  if (normalized === "5") return "python-app";
+  if (STARTER_PRESETS.has(normalized)) return normalized;
+  return null;
 }
 
 async function askCollaborationMode(rl) {
   while (true) {
-    const answer = (await rl.question(`Как организовать агентную работу? solo / team-lite / team-full
-Подсказка: solo — один агент и меньше файлов. team-lite/full нужны только для больших проектов.
+    const answer = (await rl.question(`Как организовать агентную работу? (agent workflow)
+1. Solo — один агент и меньше файлов
+2. Team lite — оркестратор, исполнитель, reviewer
+3. Team full — discovery, architect, implementer, QA, reviewer, research
+Нажми Enter для Solo.
 > `)).trim().toLowerCase() || "solo";
-    if (COLLABORATION_MODES.has(answer)) return answer;
-    console.log("Выбери: solo, team-lite или team-full.");
+    const normalized = normalizeCollaborationMode(answer);
+    if (normalized) return normalized;
+    console.log("Выбери 1, 2, 3 или напиши solo, team-lite, team-full.");
   }
+}
+
+function normalizeCollaborationMode(value) {
+  if (!value) return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "1") return "solo";
+  if (normalized === "2") return "team-lite";
+  if (normalized === "3") return "team-full";
+  if (COLLABORATION_MODES.has(normalized)) return normalized;
+  return null;
 }
 
 function classifyProjectType(text) {
@@ -1336,12 +1384,13 @@ async function runQuickInterview(rl, projectName) {
 }
 
 async function askReferences(rl) {
-  const hasReference = (await rl.question(`Есть сайт, пример или конкурент, на который нужно ориентироваться?
-Подсказка: если есть, агент запишет это в PRD как референс. Если нет — нажми Enter.
-yes / no
-> `)).trim().toLowerCase();
+  const hasReference = await askYesNo(rl, `Есть сайт, пример или конкурент, на который нужно ориентироваться?
+1. Yes — добавить референс в PRD
+2. No — пропустить
+Нажми Enter для No.
+> `, false);
 
-  if (!["yes", "y", "да", "д"].includes(hasReference)) {
+  if (!hasReference) {
     return null;
   }
 
@@ -1357,11 +1406,11 @@ yes / no
 }
 
 async function askGitInit(rl) {
-  const answer = (await rl.question(`Создать сохранение истории изменений? (git)
-Подсказка: yes — будет git init и первый commit. Это помогает откатиться, если агент что-то испортит. no — просто создать файлы.
-yes / no
-> `)).trim().toLowerCase() || "no";
-  return ["yes", "y", "да", "д"].includes(answer);
+  return askYesNo(rl, `Создать сохранение истории изменений? (git)
+1. Yes — git init и первый commit, чтобы можно было откатиться
+2. No — просто создать файлы
+Нажми Enter для No.
+> `, false);
 }
 
 async function runSimpleInterview(rl, projectName) {
@@ -1400,10 +1449,20 @@ async function runSimpleInterview(rl, projectName) {
 async function askSkills(rl, suggested) {
   console.log("\nРекомендованные skills, которые подходят по ответам:");
   for (const skill of suggested) console.log(`- ${skill}`);
-  console.log("\nМожно указать список через запятую, написать all или none.");
+  console.log("\nЧто добавить в .skills/README.md?");
+  console.log("1. All — добавить все рекомендации");
+  console.log("2. None — ничего не добавлять");
+  console.log("3. Custom — указать список через запятую");
   const answer = (await rl.question("> ")).trim().toLowerCase();
-  if (!answer || answer === "none" || answer === "нет") return [];
-  if (answer === "all" || answer === "все") return suggested;
+  if (!answer || answer === "2" || answer === "none" || answer === "нет") return [];
+  if (answer === "1" || answer === "all" || answer === "все") return suggested;
+  if (answer === "3" || answer === "custom" || answer === "свой") {
+    const custom = (await rl.question("Перечисли skills через запятую\n> ")).trim().toLowerCase();
+    return custom
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
   return answer
     .split(",")
     .map((item) => item.trim())
@@ -1422,20 +1481,21 @@ async function askCustomSkills(rl) {
 }
 
 async function askSuperpowersRecommendation(rl) {
-  const answer = (await rl.question(`Добавить рекомендацию Superpowers? (advanced methodology)
-Подсказка: yes — добавит в .skills/README.md ссылку и объяснение. Ничего не скачивает и не устанавливает.
-yes / no
-> `)).trim().toLowerCase() || "no";
-
-  return ["yes", "y", "да", "д"].includes(answer);
+  return askYesNo(rl, `Добавить рекомендацию Superpowers? (advanced methodology)
+1. Yes — добавить ссылку и объяснение в .skills/README.md
+2. No — не добавлять
+Ничего не скачивается и не устанавливается.
+Нажми Enter для No.
+> `, false);
 }
 
 async function askRecommendedSkillsSimple(rl, suggested) {
   console.log("\nДобавить подсказки для агента? (skills)");
   console.log(`Рекомендовано: ${suggested.join(", ")}`);
-  console.log("Подсказка: yes — в .skills/README.md появятся рекомендуемые skills. Сами skills не скачиваются.");
-  const answer = (await rl.question("yes / no\n> ")).trim().toLowerCase() || "yes";
-  return ["yes", "y", "да", "д"].includes(answer) ? suggested : [];
+  console.log("1. Yes — добавить рекомендации в .skills/README.md");
+  console.log("2. No — не добавлять");
+  console.log("Сами skills не скачиваются. Нажми Enter для Yes.");
+  return await askYesNo(rl, "> ", true) ? suggested : [];
 }
 
 async function main() {
@@ -1550,6 +1610,9 @@ function printHelp() {
 
 Usage:
   unit
+  unit 1
+  unit 2
+  unit 3
   unit simple
   unit discovery
   unit advanced
@@ -1559,12 +1622,13 @@ Usage:
   unit --mode advanced
 
 Modes:
-  simple     Быстрый старт: minimal project context for one AI agent
-  discovery  Сначала разобраться: guided interview, then minimal context
-  advanced   Расширенные настройки: scaffold, agent team mode, skills
+  1 / simple     Быстрый старт: minimal project context for one AI agent
+  2 / discovery  Сначала разобраться: guided interview, then minimal context
+  3 / advanced   Расширенные настройки: scaffold, agent team mode, skills
 
 Examples:
   cd C:\\server\\projects
+  unit 1
   unit simple
   unit simple --here
   unit --mode simple

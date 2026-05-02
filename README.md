@@ -77,6 +77,14 @@ unit discovery
 unit advanced
 ```
 
+In the interactive menu, you can choose by number:
+
+```text
+1. Simple
+2. Discovery
+3. Advanced
+```
+
 - `simple`: quick start, minimal questions, one agent, no team setup.
 - `discovery`: guided product interview first, then project files from the discovered spec.
 - `advanced`: scaffold choice, agent-team mode, skills, Superpowers recommendation, and git setup.
@@ -87,7 +95,7 @@ Recommended first run:
 unit simple
 ```
 
-Every question includes a short hint and example, so the user does not need to understand agent tooling before starting.
+Every fixed-choice question supports numbers such as `1`, `2`, `3`. Every question includes a short hint and example, so the user does not need to understand agent tooling before starting.
 
 ## What It Creates
 
@@ -207,6 +215,14 @@ unit discovery
 unit advanced
 ```
 
+В интерактивном меню можно выбирать цифрами:
+
+```text
+1. Simple
+2. Discovery
+3. Advanced
+```
+
 - `simple`: быстрый старт, минимум вопросов, один агент, без команды агентов.
 - `discovery`: сначала интервью по продукту, потом генерация файлов проекта.
 - `advanced`: выбор каркаса, режим команды агентов, skills, рекомендация Superpowers и настройка git.
@@ -217,7 +233,7 @@ unit advanced
 unit simple
 ```
 
-У каждого вопроса есть короткая подсказка и пример, поэтому человеку не нужно заранее разбираться в агентных инструментах.
+Во всех вопросах с фиксированным выбором можно нажимать цифры: `1`, `2`, `3`. У каждого вопроса есть короткая подсказка и пример, поэтому человеку не нужно заранее разбираться в агентных инструментах.
 
 ## Что создаётся
 
