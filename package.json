@@ -12,7 +12,7 @@
     "package.json"
   ],
   "bin": {
-    "unit": "./bin/unit.js"
+    "unit": "bin/unit.js"
   },
   "scripts": {
     "start": "node ./bin/unit.js",
