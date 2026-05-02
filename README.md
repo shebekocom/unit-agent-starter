@@ -1,10 +1,19 @@
 # Unit Agent Starter
 
-`unit-agent-starter` creates a new project folder with agent instructions, project memory, PRD, task tracking, guardrails, and first-session rituals.
+Simple CLI starter that creates PRD, memory, tasks, notes, and agent instructions for AI-assisted coding projects.
+
+```bash
+npm install -g unit-agent-starter
+unit simple
+```
+
+Use it when you want Codex, Claude, Gemini, or another AI coding agent to understand a project before it starts changing files.
 
 Think of it as a blank starter theme for AI-agent-managed projects: the generated repo starts with the control files an agent needs before real implementation begins.
 
 For a plain-language explanation of the generated files and rules, read [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
+
+For GitHub topics, launch notes, and promotion checklist, read [docs/DISCOVERABILITY.md](docs/DISCOVERABILITY.md).
 
 ## Local Use
 

@@ -5,7 +5,10 @@
   "type": "module",
   "files": [
     "bin",
+    "docs",
     "README.md",
+    "CONTRIBUTING.md",
+    "LICENSE",
     "package.json"
   ],
   "bin": {
@@ -19,13 +22,21 @@
     "check": "node --check ./bin/unit.js"
   },
   "keywords": [
-    "agent",
-    "starter",
+    "ai-agent",
+    "agent-starter",
+    "agentic",
+    "agentic-workflow",
+    "agents-md",
     "codex",
     "claude",
+    "claude-code",
     "gemini",
-    "ai-agent",
-    "prd"
+    "vibe-coding",
+    "starter",
+    "cli",
+    "prd",
+    "project-template",
+    "developer-tools"
   ],
   "author": "",
   "license": "MIT",
