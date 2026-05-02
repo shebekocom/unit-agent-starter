@@ -238,6 +238,14 @@ function renderSimpleFiles(answers) {
   const agentFileName = simpleAgentFileName(agentProfile);
   const date = today();
   const protectedFiles = "PRD.md, MEMORY.md, TASKS.md, README.md, .env";
+  const referenceLine = referenceMemoryLine(answers.references);
+  const simpleMemoryDecisions = [
+    "- Проект создан через Unit Agent Starter",
+    `- Первый рабочий файл агента: ${agentFileName}`,
+    `- Основной агент: ${agentProfile}`,
+    `- Стек: ${stack}`,
+    ...(referenceLine ? [referenceLine] : [])
+  ].join("\n");
   const otherAgentNote = agentProfile === "other"
     ? `\n## Универсальный профиль\nЭтот проект подготовлен для другого AI-помощника или IDE.\n\nПодходит для OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax и других инструментов, которые читают AGENTS.md или позволяют вставить инструкции вручную.\n`
     : "";
@@ -317,25 +325,34 @@ ${infra}
 > Для чего файл: хранит важную память проекта между сессиями.
 > Кто редактирует: человек. Агент НЕ меняет этот файл напрямую.
 > Агент пишет предложения для памяти в NOTES.md.
-> Правило: держать файл коротким, только важное.
+> Правило: держать файл коротким. Старое переносить в архив или удалять.
 
-## Важно помнить
+## Статус [макс 10 строк — старое удалять]
+⬜ Первый рабочий результат: ${answers.discovery ? answers.discovery.mvpFlow : "уточнить и выполнить"}
+⬜ Агент: ${agentProfile}; основной файл инструкций: ${agentFileName}
+⬜ Стек: ${stack}
+
+## Инфраструктура
+- Локально: текущая папка проекта
+- Деплой: ${infra}
+- Секреты: только через .env / переменные окружения
+
+## Решения [макс 10 строк — только финальные]
+${simpleMemoryDecisions}
+
+## Нельзя [макс 10 строк — правила навсегда]
 - ${critical || "Не трогать .env и секреты."}
-${referenceMemoryLine(answers.references) ? `${referenceMemoryLine(answers.references)}\n` : ""}- Основной агент: ${agentProfile}
-- Стек: ${stack}
+- Не хардкодить токены, пароли и приватные ключи
+- Не менять PRD.md, MEMORY.md и TASKS.md без явной команды человека
 
-## Что уже решили
-- Проект создан через Unit Agent Starter
-- Первый рабочий файл агента: ${agentFileName}
+## Снапшот делать когда
+- После каждого выполненного важного шага
+- Перед переключением на другую LLM
+- Перед крупной миграцией, деплоем или удалением файлов
 
-## Что сработало
-- Пока пусто
-
-## Что не сработало
-- Пока пусто
-
-## Вопросы
-- Пока нет
+## Заметки для переноса
+- Агент пишет предложения в NOTES.md
+- Человек переносит важное сюда вручную
 
 ## Обновлено
 ${date} — инициализация
@@ -447,29 +464,38 @@ function renderFiles(answers) {
   const criticalBlock = critical.trim().toLowerCase() === "нет" || !critical.trim()
     ? ""
     : `## ⚠ КРИТИЧНО\n${critical}\n\n`;
+  const advancedReferenceLine = referenceMemoryLine(answers.references);
+  const advancedMemoryDecisions = [
+    `- Основной профиль агента: ${agentProfile}`,
+    `- Основной контракт: ${agentPrimaryFile(agentProfile)}`,
+    `- Стек: ${stack}`,
+    `- Каркас проекта: ${resolvedPreset}`,
+    `- Режим агентов: ${answers.collaborationMode}`,
+    ...(advancedReferenceLine ? [advancedReferenceLine] : [])
+  ].join("\n");
 
   const memory = `# MEMORY — ${projectName}
 > Только владелец проекта редактирует. LLM предлагают изменения через .staging/notes.md.
-> Лимит секции — 10 строк. Старое переносить в .context/
+> Лимит ключевых секций — 10 строк. Старое переносить в .context/ или удалять.
 
-## Статус
+## Статус [макс 10 строк — старое удалять]
 ⬜ Шаг 1: инициализировать базовый код проекта
 ⬜ Шаг 2: подключить линтер и тесты
 ⬜ Шаг 3: реализовать первый MVP-сценарий
 
 ## Инфраструктура
-${infra}
+- Локально: текущая папка проекта
+- Деплой: ${infra}
+- Секреты: только через .env / переменные окружения
+- Критичные ограничения: ${critical.trim() || "не указаны"}
 
-## Решения
-- Основной профиль агента: ${agentProfile}
-- Основной контракт: ${agentPrimaryFile(agentProfile)}
-- Стек: ${stack}
-- Каркас проекта: ${resolvedPreset}
-- Режим агентов: ${answers.collaborationMode}
-${referenceMemoryLine(answers.references)}
+## Решения [макс 10 строк — только финальные]
+${advancedMemoryDecisions}
 
-## Нельзя
-${critical.trim() || "Не менять .env и защищённые файлы без явной команды владельца."}
+## Нельзя [макс 10 строк — правила навсегда]
+- ${critical.trim() || "Не менять .env и защищённые файлы без явной команды владельца."}
+- Не хардкодить токены, пароли и приватные ключи
+- Не менять MEMORY.md, TODO.md, CLAUDE.md, AGENTS.md и .skills/* без явной команды владельца
 
 ## Скиллы выбраны
 ${skillListMarkdown(installedSkills)}
@@ -478,6 +504,7 @@ ${skillListMarkdown(installedSkills)}
 - После каждого выполненного шага
 - Перед переключением на другую LLM
 - Перед крупной миграцией или деплоем
+- Раз в неделю для долгих проектов
 
 ## Обновлено
 ${date} — инициализация

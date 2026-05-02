@@ -157,6 +157,28 @@ It stores:
 - what did not work;
 - questions that must not be forgotten.
 
+Generated `MEMORY.md` uses this structure:
+
+```text
+## Status [max 10 lines — remove old items]
+Current state and the next visible step.
+
+## Infrastructure
+Local path, deploy target, ports, services, credentials location, and critical runtime notes.
+
+## Decisions [max 10 lines — final decisions only]
+Architecture and product decisions that should survive between sessions.
+
+## Never [max 10 lines — permanent rules]
+Things the agent must not do.
+
+## Snapshot when
+When to copy memory into an archive or context snapshot.
+
+## Updated
+Last meaningful manual update.
+```
+
 Who edits it:
 
 ```text
@@ -525,6 +547,28 @@ README.md
 - что сработало;
 - что не сработало;
 - вопросы, которые нельзя забыть.
+
+Созданный `MEMORY.md` использует такую структуру:
+
+```text
+## Статус [макс 10 строк — старое удалять]
+Текущее состояние и следующий видимый шаг.
+
+## Инфраструктура
+Локальный путь, деплой, порты, сервисы, где лежат доступы, важные runtime-заметки.
+
+## Решения [макс 10 строк — только финальные]
+Архитектурные и продуктовые решения, которые нужно помнить между сессиями.
+
+## Нельзя [макс 10 строк — правила навсегда]
+Что агенту запрещено делать.
+
+## Снапшот делать когда
+Когда копировать память в архив или context snapshot.
+
+## Обновлено
+Последнее важное ручное обновление.
+```
 
 Кто редактирует:
 
