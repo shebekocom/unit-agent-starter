@@ -807,14 +807,14 @@ async function exists(target) {
 async function askExistingFileAction(rl, relativePath) {
   while (true) {
     const answer = (await rl.question(`Файл уже существует: ${relativePath}
-Что сделать? overwrite / skip / stop
+Что сделать? append / overwrite / skip
 Подсказка: Enter = skip, чтобы не потерять данные.
 > `)).trim().toLowerCase() || "skip";
 
+    if (["append", "a", "дописать"].includes(answer)) return "append";
     if (["overwrite", "o", "перезаписать"].includes(answer)) return "overwrite";
     if (["skip", "s", "пропустить"].includes(answer)) return "skip";
-    if (["stop", "cancel", "стоп", "отмена"].includes(answer)) return "stop";
-    console.log("Выбери overwrite, skip или stop.");
+    console.log("Выбери append, overwrite или skip.");
   }
 }
 
@@ -822,7 +822,8 @@ async function writeProjectFiles(root, files, rl) {
   const result = {
     written: [],
     skipped: [],
-    overwritten: []
+    overwritten: [],
+    appended: []
   };
 
   for (const [relativePath, content] of Object.entries(files)) {
@@ -830,11 +831,14 @@ async function writeProjectFiles(root, files, rl) {
     await fs.mkdir(path.dirname(absolutePath), { recursive: true });
     if (await exists(absolutePath)) {
       const action = await askExistingFileAction(rl, relativePath);
-      if (action === "stop") {
-        throw new Error(`Stopped because file exists: ${relativePath}`);
-      }
       if (action === "skip") {
         result.skipped.push(relativePath);
+        continue;
+      }
+      if (action === "append") {
+        const appendix = `\n\n---\n\n<!-- Unit appended generated content. Review and merge manually if useful. -->\n\n${content}`;
+        await fs.appendFile(absolutePath, appendix, "utf8");
+        result.appended.push(relativePath);
         continue;
       }
       result.overwritten.push(relativePath);
@@ -1458,6 +1462,9 @@ async function main() {
     console.log(`Git: ${gitResult}`);
     if (writeResult.overwritten.length) {
       console.log(`Перезаписано файлов: ${writeResult.overwritten.length}`);
+    }
+    if (writeResult.appended.length) {
+      console.log(`Дописано в конец файлов: ${writeResult.appended.length}`);
     }
     if (writeResult.skipped.length) {
       console.log(`Пропущено файлов: ${writeResult.skipped.length}`);

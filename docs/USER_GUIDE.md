@@ -28,6 +28,18 @@ unit simple
 unit simple --here
 ```
 
+Если файл уже существует, Unit спросит:
+
+```text
+append / overwrite / skip
+```
+
+- `append` — дописать новый блок в конец файла;
+- `overwrite` — перезаписать файл;
+- `skip` — пропустить файл.
+
+Enter означает `skip`. Это защищает `MEMORY.md`, `TASKS.md` и `PRD.md` от случайной перезаписи.
+
 Если не знаешь, что выбрать, запускай:
 
 ```bash

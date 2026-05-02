@@ -58,10 +58,10 @@ unit discovery --here
 When a target file already exists, Unit asks per file:
 
 ```text
-overwrite / skip / stop
+append / overwrite / skip
 ```
 
-Press Enter to skip. This protects project memory files from accidental overwrite.
+Press Enter to skip. `append` adds the generated content to the end of the existing file with a separator, so the user can review and merge it manually.
 
 Explicit modes:
 
