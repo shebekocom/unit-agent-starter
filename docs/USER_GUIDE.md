@@ -31,14 +31,16 @@ unit simple --here
 If a target file already exists, Unit asks:
 
 ```text
-append / overwrite / skip
+1. Append — add generated content to the end
+2. Overwrite — replace the file
+3. Skip — keep the existing file
 ```
 
 - `append`: add the generated block to the end of the file.
 - `overwrite`: replace the file.
 - `skip`: keep the existing file unchanged.
 
-Enter means `skip`. This protects `MEMORY.md`, `TASKS.md`, and `PRD.md` from accidental overwrites.
+Enter means `skip`. You can choose by number, so pressing `1`, `2`, or `3` is enough. This protects `MEMORY.md`, `TASKS.md`, and `PRD.md` from accidental overwrites.
 
 If you do not know what to choose, run:
 
@@ -422,14 +424,16 @@ unit simple --here
 Если файл уже существует, Unit спросит:
 
 ```text
-append / overwrite / skip
+1. Append — дописать новый блок в конец файла
+2. Overwrite — перезаписать файл
+3. Skip — оставить существующий файл
 ```
 
 - `append`: дописать новый блок в конец файла.
 - `overwrite`: перезаписать файл.
 - `skip`: оставить существующий файл без изменений.
 
-Enter означает `skip`. Это защищает `MEMORY.md`, `TASKS.md` и `PRD.md` от случайной перезаписи.
+Enter означает `skip`. Можно выбрать цифрой: достаточно нажать `1`, `2` или `3`. Это защищает `MEMORY.md`, `TASKS.md` и `PRD.md` от случайной перезаписи.
 
 Если не знаешь, что выбрать, запускай:
 

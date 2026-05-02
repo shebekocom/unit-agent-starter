@@ -64,10 +64,12 @@ unit discovery --here
 If a target file already exists, Unit asks per file:
 
 ```text
-append / overwrite / skip
+1. Append — add generated content to the end
+2. Overwrite — replace the file
+3. Skip — keep the existing file
 ```
 
-Press Enter to skip. `append` adds the generated content to the end of the existing file with a separator, so the user can review and merge it manually.
+Press Enter to skip. You can also type `append`, `overwrite`, or `skip`, but numbers are the easiest path. `Append` adds the generated content to the end of the existing file with a separator, so the user can review and merge it manually.
 
 ## Modes
 
@@ -202,10 +204,12 @@ unit discovery --here
 Если файл уже существует, Unit спросит по каждому файлу:
 
 ```text
-append / overwrite / skip
+1. Append — дописать новый блок в конец файла
+2. Overwrite — перезаписать файл
+3. Skip — оставить существующий файл
 ```
 
-Enter означает `skip`. `append` дописывает новый блок в конец файла через разделитель, чтобы человек сам посмотрел и объединил нужное.
+Enter означает `skip`. Можно также написать `append`, `overwrite` или `skip`, но проще выбрать цифру. `Append` дописывает новый блок в конец файла через разделитель, чтобы человек сам посмотрел и объединил нужное.
 
 ## Режимы
 

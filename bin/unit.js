@@ -866,14 +866,17 @@ async function exists(target) {
 async function askExistingFileAction(rl, relativePath) {
   while (true) {
     const answer = (await rl.question(`Файл уже существует: ${relativePath}
-Что сделать? append / overwrite / skip
+Что сделать?
+1. Append — дописать новый блок в конец файла
+2. Overwrite — перезаписать файл
+3. Skip — оставить как есть
 Подсказка: Enter = skip, чтобы не потерять данные.
 > `)).trim().toLowerCase() || "skip";
 
-    if (["append", "a", "дописать"].includes(answer)) return "append";
-    if (["overwrite", "o", "перезаписать"].includes(answer)) return "overwrite";
-    if (["skip", "s", "пропустить"].includes(answer)) return "skip";
-    console.log("Выбери append, overwrite или skip.");
+    if (["1", "append", "a", "дописать"].includes(answer)) return "append";
+    if (["2", "overwrite", "o", "перезаписать"].includes(answer)) return "overwrite";
+    if (["3", "skip", "s", "пропустить"].includes(answer)) return "skip";
+    console.log("Выбери 1, 2 или 3.");
   }
 }
 
