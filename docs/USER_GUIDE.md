@@ -212,6 +212,15 @@ The agent writes:
 - what should be moved to `MEMORY.md`;
 - what should be added to `TASKS.md`.
 
+Generated `NOTES.md` includes this structure:
+
+```text
+# Rule: only append lines at the bottom
+# Format: [date] [model] [type] text
+# Types: done / lesson / decision / question
+# The project owner clears the file after merging important notes into MEMORY.md, TASKS.md, or PRD.md.
+```
+
 Who edits it:
 
 ```text
@@ -571,6 +580,15 @@ README.md
 - что предложить перенести в `PRD.md`;
 - что предложить перенести в `MEMORY.md`;
 - что предложить добавить в `TASKS.md`.
+
+В созданном `NOTES.md` есть такая структура:
+
+```text
+# Правило: только добавлять строки снизу
+# Формат: [дата] [модель] [тип] текст
+# Типы: done / lesson / decision / question
+# Владелец проекта очищает файл после переноса важного в MEMORY.md, TASKS.md или PRD.md.
+```
 
 Кто редактирует:
 

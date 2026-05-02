@@ -364,15 +364,17 @@ ${date} — инициализация
 > Человек переносит важное из NOTES.md в PRD.md, MEMORY.md или TASKS.md.
 > Старые записи нужно очищать после переноса, чтобы файл не разрастался.
 
-## Формат записи
-- дата:
-- агент:
-- что сделано:
-- что проверить:
-- вопросы:
-- предложить человеку перенести в PRD:
-- предложить человеку перенести в MEMORY:
-- предложить человеку добавить в TASKS:
+## Правила
+- Только добавлять строки снизу.
+- Не редактировать и не переписывать старые записи.
+- Формат: [дата] [модель] [тип] текст
+- Типы: done / lesson / decision / question
+- Владелец проекта очищает файл после переноса важного в MEMORY.md, TASKS.md или PRD.md.
+
+## Примеры
+[2026-05-02] [codex] done: created project scaffold and updated README.
+[2026-05-02] [codex] question: confirm production deploy target before adding CI.
+[2026-05-02] [codex] lesson: use existing API client instead of creating a second wrapper.
 
 ---
 `,
@@ -779,7 +781,8 @@ ${referenceBlock(answers.references)}
 `,
     ".staging/notes.md": `# .staging/notes.md
 # Только добавлять снизу. Владелец очищает после переноса в MEMORY.md.
-# Формат: [дата][модель] [тип] описание
+# Не редактировать и не переписывать старые записи.
+# Формат: [дата] [модель] [тип] текст
 # Типы: done / lesson / decision / question
 ---
 `,
