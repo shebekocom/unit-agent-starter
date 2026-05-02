@@ -153,6 +153,8 @@ In `simple` mode:
 
 The CLI also asks whether to initialize git. If enabled, it runs `git init`, creates the first commit, and uses `main` as the branch.
 
+`NOTES.md` is a temporary inbox for agent output. The agent should not read it at the start of every session unless asked. It writes suggestions there; the human decides what to move into `PRD.md`, `MEMORY.md`, or `TASKS.md`.
+
 In `discovery` and `advanced` modes it can create the fuller project-control set:
 
 - `CLAUDE.md`, `AGENTS.md`, `MEMORY.md`, `TODO.md`
