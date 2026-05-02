@@ -866,7 +866,7 @@ async function askOptional(rl, question, fallback = "нет") {
 
 async function askAgentProfile(rl) {
   while (true) {
-    const answer = (await rl.question(`Под какого агента оптимизировать проект? codex / claude / gemini / multi
+    const answer = (await rl.question(`С каким AI-помощником будешь работать? (agent profile: codex / claude / gemini / multi)
 Подсказка: выбери того, с кем реально будешь начинать. Если не уверен — codex или multi.
 > `)).trim().toLowerCase();
     if (AGENT_PROFILES.has(answer)) return answer;
@@ -880,10 +880,10 @@ async function askStarterMode(rl) {
 
   while (true) {
     const answer = (await rl.question(`Как стартуем?
-1. simple — быстрый старт, один агент, минимум вопросов
-2. discovery — интервью и первичный PRD
-3. advanced — каркас, команды агентов, skills и доп. настройки
-Нажми Enter для simple.
+1. Быстрый старт (simple) — один AI-помощник, минимум вопросов
+2. Сначала разобраться (discovery) — вопросы и первичный PRD
+3. Расширенные настройки (advanced) — каркас, команды агентов, skills
+Нажми Enter для быстрого старта (simple).
 > `)).trim().toLowerCase() || "simple";
     const normalized = normalizeMode(answer);
     if (normalized) return normalized;
@@ -898,6 +898,9 @@ function parseModeArg(args) {
 
   const inline = args.find((arg) => arg.startsWith("--mode="));
   if (inline) return normalizeMode(inline.slice("--mode=".length));
+
+  const positionalMode = args.find((arg) => !arg.startsWith("-"));
+  if (positionalMode) return normalizeMode(positionalMode);
 
   return null;
 }
@@ -1268,8 +1271,8 @@ yes / no
 }
 
 async function askGitInit(rl) {
-  const answer = (await rl.question(`Инициализировать git-репозиторий и создать первый commit?
-Подсказка: yes — будет git init, git add и первый commit. no — просто создать файлы.
+  const answer = (await rl.question(`Создать сохранение истории изменений? (git)
+Подсказка: yes — будет git init и первый commit. Это помогает откатиться, если агент что-то испортит. no — просто создать файлы.
 yes / no
 > `)).trim().toLowerCase() || "no";
   return ["yes", "y", "да", "д"].includes(answer);
@@ -1333,8 +1336,9 @@ async function askCustomSkills(rl) {
 }
 
 async function askRecommendedSkillsSimple(rl, suggested) {
-  console.log("\nДобавить базовые рекомендации по skills в инструкции?");
+  console.log("\nДобавить подсказки для агента? (skills)");
   console.log(`Рекомендовано: ${suggested.join(", ")}`);
+  console.log("Подсказка: yes — в .skills/README.md появятся рекомендуемые skills. Сами skills не скачиваются.");
   const answer = (await rl.question("yes / no\n> ")).trim().toLowerCase() || "yes";
   return ["yes", "y", "да", "д"].includes(answer) ? suggested : [];
 }
@@ -1423,17 +1427,21 @@ function printHelp() {
 
 Usage:
   unit
+  unit simple
+  unit discovery
+  unit advanced
   unit --mode simple
   unit --mode discovery
   unit --mode advanced
 
 Modes:
-  simple     Minimal project context for one AI agent
-  discovery  Guided interview, then minimal project context
-  advanced   Scaffold, agent team mode, skills, and extra setup
+  simple     Быстрый старт: minimal project context for one AI agent
+  discovery  Сначала разобраться: guided interview, then minimal context
+  advanced   Расширенные настройки: scaffold, agent team mode, skills
 
 Examples:
   cd C:\\server\\projects
+  unit simple
   unit --mode simple
 
 The generated project is created in the current directory.

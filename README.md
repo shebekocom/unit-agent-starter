@@ -48,6 +48,10 @@ The starter does not copy itself into the generated project.
 Explicit modes:
 
 ```bash
+unit simple
+unit discovery
+unit advanced
+
 npm run start:simple
 npm run start:discovery
 npm run start:advanced
@@ -63,9 +67,9 @@ npm start -- --mode advanced
 
 The CLI asks for a start mode:
 
-- `simple`: default path for most people. Minimal questions, one agent, no team files.
-- `discovery`: guided product interview first, then generates project files from the discovered spec.
-- `advanced`: choose scaffold, agent-team mode, skills, and extra setup.
+- Быстрый старт (`simple`): default path for most people. Minimal questions, one agent, no team files.
+- Сначала разобраться (`discovery`): guided product interview first, then generates project files from the discovered spec.
+- Расширенные настройки (`advanced`): choose scaffold, agent-team mode, skills, and extra setup.
 
 Recommended first run:
 
@@ -106,6 +110,9 @@ After publishing or linking:
 ```bash
 npx unit-agent-starter
 unit
+unit simple
+unit discovery
+unit advanced
 unit --mode simple
 unit --mode discovery
 unit --mode advanced
