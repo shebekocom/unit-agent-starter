@@ -104,6 +104,27 @@ function skillListMarkdown(skills) {
   return skills.map((skill) => `- ${skill}`).join("\n");
 }
 
+function superpowersRecommendationBlock(skills) {
+  if (!skills.includes("using-superpowers")) return "";
+
+  return `
+## Superpowers
+
+Superpowers is an external agentic skills framework and software development methodology.
+
+Source:
+https://github.com/obra/superpowers
+
+Use when:
+- the project is bigger than a quick one-file task;
+- you want structured brainstorming, planning, TDD, review, and verification;
+- you are ready to follow a stricter development workflow.
+
+Unit does not install Superpowers automatically.
+Install it manually for your agent after reviewing the source and installation instructions.
+`;
+}
+
 function codeFolders(stack) {
   const normalized = stack.toLowerCase();
   if (normalized.includes("next") || normalized.includes("react")) return "app/ · src/ · components/ · lib/ · tests/";
@@ -368,6 +389,7 @@ ${date} — инициализация
 
 Рекомендовано для этого проекта:
 ${skillListMarkdown(selectedSkills)}
+${superpowersRecommendationBlock(selectedSkills)}
 `,
     "README.md": `# ${projectName}
 
@@ -787,6 +809,7 @@ ${officialSkillCatalog()}
 Selected for this project:
 
 ${skillListMarkdown(installedSkills)}
+${superpowersRecommendationBlock(installedSkills)}
 
 Discovery source:
 - discovery-interview: https://github.com/parcadei/continuous-claude-v3/tree/main/skills/discovery-interview
@@ -1398,6 +1421,15 @@ async function askCustomSkills(rl) {
     .filter(Boolean);
 }
 
+async function askSuperpowersRecommendation(rl) {
+  const answer = (await rl.question(`Добавить рекомендацию Superpowers? (advanced methodology)
+Подсказка: yes — добавит в .skills/README.md ссылку и объяснение. Ничего не скачивает и не устанавливает.
+yes / no
+> `)).trim().toLowerCase() || "no";
+
+  return ["yes", "y", "да", "д"].includes(answer);
+}
+
 async function askRecommendedSkillsSimple(rl, suggested) {
   console.log("\nДобавить подсказки для агента? (skills)");
   console.log(`Рекомендовано: ${suggested.join(", ")}`);
@@ -1450,6 +1482,9 @@ async function main() {
       ? await askRecommendedSkillsSimple(rl, suggested)
       : await askSkills(rl, suggested);
     const customSkills = mode === "advanced" ? await askCustomSkills(rl) : [];
+    if (mode === "advanced" && await askSuperpowersRecommendation(rl) && !selectedSkills.includes("using-superpowers")) {
+      selectedSkills.push("using-superpowers");
+    }
     const shouldInitGit = await askGitInit(rl);
 
     const projectRoot = createHere ? process.cwd() : path.resolve(process.cwd(), projectName);

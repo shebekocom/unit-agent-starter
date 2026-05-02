@@ -133,6 +133,16 @@ In `advanced` mode it can also ask how agent work should be organized:
 
 Use `solo` for small or unclear projects. Use team modes only when the project is large enough to benefit from delegation. `simple` and `discovery` always use `solo`.
 
+Advanced mode is for choosing a professional workflow, not just creating more files:
+
+- scaffold preset;
+- agent-team mode;
+- selected skills;
+- optional Superpowers recommendation;
+- git setup.
+
+Superpowers is not installed automatically. Unit can add it as a recommendation in `.skills/README.md` with a source link and a note to review installation instructions manually.
+
 After publishing or linking:
 
 ```bash
