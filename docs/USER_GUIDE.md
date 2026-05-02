@@ -276,7 +276,15 @@ After the agent works, the human reads `NOTES.md`, moves important information i
 
 ## Importing A Large Context Dump
 
-You can send the agent many project materials at once: old specs, links, competitor notes, screenshots described in text, API notes, meeting notes, or rough ideas.
+You can send the agent many project materials at once: old specs, links, competitor notes, screenshots described in text, API notes, meeting notes, marketing notes, or rough ideas.
+
+Useful materials to paste:
+
+- current website, competitor, reference, GitHub, or API documentation links;
+- old specs, client messages, notes, requirements, feature lists;
+- target audience, offer, marketing, funnel, positioning, copy ideas;
+- stack, server, access, deadline, budget, and legal constraints;
+- file snippets or existing project notes that should not be lost.
 
 Use this prompt:
 
@@ -289,7 +297,7 @@ Sort the information into:
 - proposed additions to TASKS.md
 - questions or conflicts to leave in NOTES.md
 
-[paste project materials]
+[paste project materials here]
 ```
 
 The agent should not silently rewrite protected files. It should produce recommendations first. The human then decides what to move into `PRD.md`, `MEMORY.md`, and `TASKS.md`.
@@ -708,7 +716,15 @@ README.md
 
 ## Импорт большого контекста
 
-Можно отправить агенту много материалов проекта одним сообщением: старые ТЗ, ссылки, заметки по конкурентам, текстовое описание скриншотов, заметки по API, итоги созвонов или сырые идеи.
+Можно отправить агенту много материалов проекта одним сообщением: старые ТЗ, ссылки, заметки по конкурентам, текстовое описание скриншотов, заметки по API, маркетинг, итоги созвонов или сырые идеи.
+
+Что полезно вставлять:
+
+- ссылки на текущий сайт, конкурентов, референсы, GitHub или документацию API;
+- старые ТЗ, сообщения клиентов, заметки, требования, список фич;
+- аудиторию, оффер, маркетинг, воронку, позиционирование, идеи текстов;
+- стек, сервер, доступы, сроки, бюджет и юридические ограничения;
+- фрагменты файлов или старые заметки проекта, которые нельзя потерять.
 
 Используй такой prompt:
 
@@ -721,7 +737,7 @@ README.md
 - что предложить добавить в TASKS.md
 - какие вопросы или конфликты оставить в NOTES.md
 
-[вставь материалы проекта]
+[вставь материалы проекта сюда]
 ```
 
 Агент не должен молча переписывать защищённые файлы. Сначала он даёт рекомендации. Потом человек сам решает, что переносить в `PRD.md`, `MEMORY.md` и `TASKS.md`.
