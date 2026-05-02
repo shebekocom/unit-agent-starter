@@ -13,6 +13,8 @@ Think of it as a blank starter theme for AI-agent-managed projects: the generate
 
 For a plain-language explanation of the generated files and rules, read [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
 
+For the difference between `simple`, `discovery`, and `advanced`, read [docs/MODES.md](docs/MODES.md).
+
 For GitHub topics, launch notes, and promotion checklist, read [docs/DISCOVERABILITY.md](docs/DISCOVERABILITY.md).
 
 ## Local Use
