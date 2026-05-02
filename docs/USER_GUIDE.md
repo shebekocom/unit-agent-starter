@@ -274,6 +274,26 @@ The agent does not read `NOTES.md` at the start of every session unless the huma
 
 After the agent works, the human reads `NOTES.md`, moves important information into the right files, and removes outdated notes. This prevents `NOTES.md` from growing forever and keeps prompt context small.
 
+## Importing A Large Context Dump
+
+You can send the agent many project materials at once: old specs, links, competitor notes, screenshots described in text, API notes, meeting notes, or rough ideas.
+
+Use this prompt:
+
+```text
+Analyze the context below.
+Do not edit PRD.md, MEMORY.md, or TASKS.md directly.
+Sort the information into:
+- proposed additions to PRD.md
+- proposed additions to MEMORY.md
+- proposed additions to TASKS.md
+- questions or conflicts to leave in NOTES.md
+
+[paste project materials]
+```
+
+The agent should not silently rewrite protected files. It should produce recommendations first. The human then decides what to move into `PRD.md`, `MEMORY.md`, and `TASKS.md`.
+
 ## .skills/README.md
 
 `.skills/README.md` explains which extra skills may be useful for the agent.
@@ -685,6 +705,26 @@ README.md
 Агент не читает `NOTES.md` в начале каждой сессии, если человек не попросил. Для контекста он читает `PRD.md`, `MEMORY.md` и `TASKS.md`.
 
 После работы агента человек читает `NOTES.md`, переносит важное в нужные файлы и очищает устаревшие записи. Это защищает проект от разрастания `NOTES.md` и лишнего контекста в prompt.
+
+## Импорт большого контекста
+
+Можно отправить агенту много материалов проекта одним сообщением: старые ТЗ, ссылки, заметки по конкурентам, текстовое описание скриншотов, заметки по API, итоги созвонов или сырые идеи.
+
+Используй такой prompt:
+
+```text
+Разбери контекст ниже.
+Не меняй PRD.md, MEMORY.md и TASKS.md напрямую.
+Разложи информацию по разделам:
+- что предложить добавить в PRD.md
+- что предложить добавить в MEMORY.md
+- что предложить добавить в TASKS.md
+- какие вопросы или конфликты оставить в NOTES.md
+
+[вставь материалы проекта]
+```
+
+Агент не должен молча переписывать защищённые файлы. Сначала он даёт рекомендации. Потом человек сам решает, что переносить в `PRD.md`, `MEMORY.md` и `TASKS.md`.
 
 ## .skills/README.md
 

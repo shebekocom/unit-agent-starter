@@ -117,6 +117,8 @@ The CLI also asks whether to initialize git. If enabled, it runs `git init`, cre
 
 `NOTES.md` is a temporary inbox for agent output. The agent should not read it at the start of every session unless asked. It writes suggestions there; the human decides what to move into `PRD.md`, `MEMORY.md`, or `TASKS.md`.
 
+You can also paste a large context dump into the agent chat and ask it to sort the material into proposed updates for `PRD.md`, `MEMORY.md`, `TASKS.md`, and `NOTES.md`. The agent recommends changes first; the project owner decides what to merge.
+
 ## Agent Profiles
 
 The CLI asks which executor profile to optimize for:
@@ -256,6 +258,8 @@ unit simple
 CLI также спрашивает, нужно ли инициализировать git. Если да, он запускает `git init`, создаёт первый commit и использует ветку `main`.
 
 `NOTES.md` — временный inbox для вывода агента. Агент не должен читать его в начале каждой сессии без просьбы. Он пишет туда предложения, а человек решает, что переносить в `PRD.md`, `MEMORY.md` или `TASKS.md`.
+
+Также можно вставить большой набор материалов прямо в чат агента и попросить разложить информацию по предложениям для `PRD.md`, `MEMORY.md`, `TASKS.md` и `NOTES.md`. Агент сначала рекомендует изменения, а владелец проекта решает, что переносить.
 
 ## Профили агентов
 
