@@ -434,7 +434,8 @@ ${superpowersRecommendationBlock(selectedSkills)}
 
 ## Как начать
 1. Открой ${agentFileName}
-2. Дай агенту первый промпт:
+2. Скопируй prompt ниже и вставь его в чат агента: Codex, Claude, Gemini или другой AI coding tool.
+   Этот prompt нужен, чтобы агент прочитал инструкции проекта, понял правила и взял первую задачу.
 
 \`\`\`
 Прочитай ${agentFileName}, PRD.md, MEMORY.md и TASKS.md.
@@ -1755,7 +1756,7 @@ async function main() {
 
     const gitResult = shouldInitGit ? await maybeGitInit(projectRoot) : "git skipped by user";
 
-    section(`Проект ${projectName} инициализирован`, "Готово. Ниже краткий итог и первый prompt для агента.");
+    section(`Проект ${projectName} инициализирован`, "Готово. Ниже краткий итог и стартовый prompt для агента.");
     console.log(`${color.cyan("Папка:")} ${projectRoot}`);
     console.log(`${color.cyan("Создание:")} ${createHere ? "в текущей папке (--here)" : "в новой папке проекта"}`);
     console.log(`${color.cyan("Профиль агента:")} ${agentProfile}`);
@@ -1770,8 +1771,12 @@ async function main() {
     if (writeResult.skipped.length) {
       console.log(`Пропущено файлов: ${writeResult.skipped.length}`);
     }
-    console.log(`\n${color.bold("Первый промпт для следующей сессии:")}`);
+    console.log(`\n${color.bold("Следующий шаг: запусти агента")}`);
+    console.log(color.dim("Скопируй текст между линиями ниже и вставь его в чат Codex, Claude, Gemini или другого агента."));
+    console.log(color.dim("Этот prompt заставит агента прочитать инструкции проекта и понять, что делать первым."));
     console.log(divider());
+    console.log(color.bold("COPY FROM HERE"));
+    console.log("");
     if (mode !== "advanced") {
       console.log(`Прочитай ${simpleAgentFileName(agentProfile)}, PRD.md, MEMORY.md и TASKS.md.`);
       console.log("Подтверди: что строим, что важно помнить, и какую задачу берёшь первой.");
@@ -1790,6 +1795,8 @@ async function main() {
       console.log("ссылки на сайт/конкурентов, старые ТЗ, заметки, API, тексты, маркетинг, ограничения.");
       console.log("Когда я пришлю материалы, разбери их и предложи, что добавить в docs/PRD.md, MEMORY.md, TODO.md и .staging/notes.md.");
     }
+    console.log("");
+    console.log(color.bold("COPY UNTIL HERE"));
     console.log(divider());
   } finally {
     rl.close();

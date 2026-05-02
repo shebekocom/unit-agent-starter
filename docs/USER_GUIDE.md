@@ -356,7 +356,9 @@ The agent writes memory proposals to NOTES.md.
 
 ## First Prompt For The Agent
 
-After creating the project, send this to the agent:
+After creating the project, copy the text below and paste it into the chat of your AI coding agent: Codex, Claude, Gemini, or another tool.
+
+This prompt tells the agent to read the project instructions, understand the rules, and take the first task.
 
 ```text
 Read AGENTS.md, PRD.md, MEMORY.md, and TASKS.md.
@@ -796,7 +798,9 @@ TASKS.md
 
 ## Первый промпт агенту
 
-После создания проекта отправь агенту:
+После создания проекта скопируй текст ниже и вставь его в чат AI-агента: Codex, Claude, Gemini или другого инструмента.
+
+Этот prompt нужен, чтобы агент прочитал инструкции проекта, понял правила и взял первую задачу.
 
 ```text
 Прочитай AGENTS.md, PRD.md, MEMORY.md и TASKS.md.
