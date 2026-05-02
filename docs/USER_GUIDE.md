@@ -205,9 +205,28 @@ What should be done?
 
 It contains:
 
-- `Now`: the first task for the agent;
+- `In progress`: the first task for the agent;
 - `Next`: upcoming tasks;
+- `Backlog`: ideas and later work;
 - `Done`: completed tasks.
+
+Generated `TASKS.md` uses this structure:
+
+```text
+## In progress
+- [ ] **Task title** — short action
+      agent: codex / claude / gemini / other
+      done when: concrete check
+
+## Next
+- [ ] Upcoming task
+
+## Backlog
+- [ ] Later idea
+
+## Done
+- [x] Completed task
+```
 
 Who edits it:
 
@@ -221,7 +240,7 @@ Why the agent does not move tasks by itself:
 - the agent may call something done too early;
 - the result should be accepted manually.
 
-The agent proposes new tasks through `NOTES.md`. The human decides what to add to `TASKS.md`.
+The agent takes the first item from `In progress`. It proposes new tasks through `NOTES.md`. The human decides what to add to `TASKS.md`.
 
 ## NOTES.md
 
@@ -598,9 +617,28 @@ README.md
 
 В нём есть:
 
-- `Сейчас`: первая задача для агента;
-- `Потом`: следующие задачи;
-- `Сделано`: выполненные задачи.
+- `В работе`: первая задача для агента;
+- `Следующее`: следующие задачи;
+- `Бэклог`: идеи и задачи на потом;
+- `Выполнено`: выполненные задачи.
+
+Созданный `TASKS.md` использует такую структуру:
+
+```text
+## В работе
+- [ ] **Название задачи** — короткое действие
+      агент: codex / claude / gemini / other
+      готово когда: конкретная проверка
+
+## Следующее
+- [ ] Следующая задача
+
+## Бэклог
+- [ ] Идея на потом
+
+## Выполнено
+- [x] Выполненная задача
+```
 
 Кто редактирует:
 
@@ -614,7 +652,7 @@ README.md
 - агент может считать задачу готовой слишком рано;
 - важно вручную принять результат.
 
-Агент предлагает новые задачи через `NOTES.md`. Человек решает, что добавлять в `TASKS.md`.
+Агент берёт первый пункт из `В работе`. Новые задачи он предлагает через `NOTES.md`. Человек решает, что добавлять в `TASKS.md`.
 
 ## NOTES.md
 
