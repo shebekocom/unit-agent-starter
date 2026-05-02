@@ -189,7 +189,7 @@ The CLI asks which executor profile to optimize for:
 - `codex`: uses `AGENTS.md` as the primary operating contract and adds Codex-oriented notes.
 - `claude`: uses `CLAUDE.md` plus `.claude/settings.json` guardrails.
 - `gemini`: creates Gemini-oriented project context under `.gemini/`.
-- `multi`: creates all profiles and marks ownership boundaries explicitly.
+- `other`: creates a universal `AGENTS.md` for OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax, or another AI coding tool.
 
 ## Safety Defaults
 

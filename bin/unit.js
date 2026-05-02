@@ -11,7 +11,7 @@ import { promisify } from "node:util";
 
 const execFileAsync = promisify(execFile);
 
-const AGENT_PROFILES = new Set(["codex", "claude", "gemini", "multi"]);
+const AGENT_PROFILES = new Set(["codex", "claude", "gemini", "other", "multi"]);
 const STARTER_MODES = new Set(["simple", "discovery", "advanced"]);
 const STARTER_PRESETS = new Set(["auto", "agent-only", "node-cli", "webapp", "python-app"]);
 const COLLABORATION_MODES = new Set(["solo", "team-lite", "team-full"]);
@@ -187,6 +187,7 @@ function agentPrimaryFile(profile) {
   if (profile === "claude") return "CLAUDE.md";
   if (profile === "gemini") return ".gemini/GEMINI.md";
   if (profile === "codex") return "AGENTS.md";
+  if (profile === "other") return "AGENTS.md";
   return "AGENTS.md + CLAUDE.md + .gemini/GEMINI.md";
 }
 
@@ -216,9 +217,13 @@ function renderSimpleFiles(answers) {
   const agentFileName = simpleAgentFileName(agentProfile);
   const date = today();
   const protectedFiles = "PRD.md, MEMORY.md, TASKS.md, README.md, .env";
+  const otherAgentNote = agentProfile === "other"
+    ? `\n## Универсальный профиль\nЭтот проект подготовлен для другого AI-помощника или IDE.\n\nПодходит для OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax и других инструментов, которые читают AGENTS.md или позволяют вставить инструкции вручную.\n`
+    : "";
   const agentInstructions = `# ${agentFileName} — ${projectName}
 
 Этот файл — инструкция для AI-агента в этом проекте.
+${otherAgentNote}
 
 ## Что читать в начале
 1. PRD.md — что строим и для кого
@@ -389,11 +394,6 @@ ${skillListMarkdown(selectedSkills)}
     ".env.example": envExample(apis),
     ".gitignore": [".env", ".env.local", ...STACK_IGNORES[inferStackKey(stack)]].join("\n") + "\n"
   };
-
-  if (agentProfile === "multi") {
-    files["CLAUDE.md"] = agentInstructions.replace(`# ${agentFileName}`, "# CLAUDE.md");
-    files["GEMINI.md"] = agentInstructions.replace(`# ${agentFileName}`, "# GEMINI.md");
-  }
 
   return files;
 }
@@ -908,12 +908,29 @@ async function askOptional(rl, question, fallback = "нет") {
 
 async function askAgentProfile(rl) {
   while (true) {
-    const answer = (await rl.question(`С каким AI-помощником будешь работать? (agent profile: codex / claude / gemini / multi)
-Подсказка: выбери того, с кем реально будешь начинать. Если не уверен — codex или multi.
+    const answer = (await rl.question(`С каким AI-помощником будешь работать? (agent profile)
+1. Codex (codex)
+2. Claude (claude)
+3. Gemini (gemini)
+4. Другой AI / IDE (other)
+Подсказка: выбирай other, если используешь OpenCode, Cursor, Windsurf, Aider, Qwen, DeepSeek, MiniMax или не уверен.
 > `)).trim().toLowerCase();
-    if (AGENT_PROFILES.has(answer)) return answer;
-    console.log("Выбери один вариант: codex, claude, gemini или multi.");
+    const normalized = normalizeAgentProfile(answer);
+    if (normalized) return normalized;
+    console.log("Выбери один вариант: codex, claude, gemini или other.");
   }
+}
+
+function normalizeAgentProfile(value) {
+  if (!value) return null;
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "1") return "codex";
+  if (normalized === "2") return "claude";
+  if (normalized === "3") return "gemini";
+  if (normalized === "4") return "other";
+  if (normalized === "multi") return "other";
+  if (AGENT_PROFILES.has(normalized)) return normalized;
+  return null;
 }
 
 async function askStarterMode(rl) {
