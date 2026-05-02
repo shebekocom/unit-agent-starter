@@ -4,6 +4,8 @@
 
 Think of it as a blank starter theme for AI-agent-managed projects: the generated repo starts with the control files an agent needs before real implementation begins.
 
+For a plain-language explanation of the generated files and rules, read [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
+
 ## Local Use
 
 ```bash
