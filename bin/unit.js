@@ -804,15 +804,47 @@ async function exists(target) {
   }
 }
 
-async function writeProjectFiles(root, files) {
+async function askExistingFileAction(rl, relativePath) {
+  while (true) {
+    const answer = (await rl.question(`Файл уже существует: ${relativePath}
+Что сделать? overwrite / skip / stop
+Подсказка: Enter = skip, чтобы не потерять данные.
+> `)).trim().toLowerCase() || "skip";
+
+    if (["overwrite", "o", "перезаписать"].includes(answer)) return "overwrite";
+    if (["skip", "s", "пропустить"].includes(answer)) return "skip";
+    if (["stop", "cancel", "стоп", "отмена"].includes(answer)) return "stop";
+    console.log("Выбери overwrite, skip или stop.");
+  }
+}
+
+async function writeProjectFiles(root, files, rl) {
+  const result = {
+    written: [],
+    skipped: [],
+    overwritten: []
+  };
+
   for (const [relativePath, content] of Object.entries(files)) {
     const absolutePath = path.join(root, relativePath);
     await fs.mkdir(path.dirname(absolutePath), { recursive: true });
     if (await exists(absolutePath)) {
-      throw new Error(`File already exists: ${relativePath}`);
+      const action = await askExistingFileAction(rl, relativePath);
+      if (action === "stop") {
+        throw new Error(`Stopped because file exists: ${relativePath}`);
+      }
+      if (action === "skip") {
+        result.skipped.push(relativePath);
+        continue;
+      }
+      result.overwritten.push(relativePath);
+    } else {
+      result.written.push(relativePath);
     }
     await fs.writeFile(absolutePath, content, "utf8");
   }
+
+  return result;
 }
 
 async function maybeGitInit(root) {
@@ -903,6 +935,10 @@ function parseModeArg(args) {
   if (positionalMode) return normalizeMode(positionalMode);
 
   return null;
+}
+
+function parseHereArg(args) {
+  return args.includes("--here");
 }
 
 function normalizeMode(value) {
@@ -1349,12 +1385,20 @@ async function main() {
     return;
   }
 
+  const args = process.argv.slice(2);
+  const createHere = parseHereArg(args);
   const rl = await createPrompt();
 
   try {
     console.log("Unit Agent Starter\nЗадаю вопросы по одному и создаю проектную папку.\n");
 
-    const rawProjectName = await askRequired(rl, "1. Как называется проект? Строчными через дефис.");
+    const rawProjectName = await askRequired(
+      rl,
+      createHere
+        ? `1. Как называется проект? Строчными через дефис.
+Подсказка: файлы будут созданы прямо в текущей папке (${process.cwd()}), без новой подпапки.`
+        : "1. Как называется проект? Строчными через дефис."
+    );
     const projectName = slugify(rawProjectName);
     const mode = await askStarterMode(rl);
     const baseAnswers = mode === "discovery"
@@ -1381,12 +1425,14 @@ async function main() {
     const customSkills = mode === "advanced" ? await askCustomSkills(rl) : [];
     const shouldInitGit = await askGitInit(rl);
 
-    const projectRoot = path.resolve(process.cwd(), projectName);
-    if (await exists(projectRoot)) {
+    const projectRoot = createHere ? process.cwd() : path.resolve(process.cwd(), projectName);
+    if (!createHere && await exists(projectRoot)) {
       throw new Error(`Project folder already exists: ${projectRoot}`);
     }
 
-    await fs.mkdir(projectRoot, { recursive: true });
+    if (!createHere) {
+      await fs.mkdir(projectRoot, { recursive: true });
+    }
     const renderAnswers = {
       ...baseAnswers,
       starterPreset,
@@ -1396,15 +1442,26 @@ async function main() {
       customSkills
     };
 
-    await writeProjectFiles(projectRoot, mode === "advanced" ? renderFiles(renderAnswers) : renderSimpleFiles(renderAnswers));
+    const writeResult = await writeProjectFiles(
+      projectRoot,
+      mode === "advanced" ? renderFiles(renderAnswers) : renderSimpleFiles(renderAnswers),
+      rl
+    );
 
     const gitResult = shouldInitGit ? await maybeGitInit(projectRoot) : "git skipped by user";
 
     console.log(`\n✅ Проект ${projectName} инициализирован`);
     console.log(`Папка: ${projectRoot}`);
+    console.log(`Создание: ${createHere ? "в текущей папке (--here)" : "в новой папке проекта"}`);
     console.log(`Профиль агента: ${agentProfile}`);
     console.log(`Скиллы: ${installedSummary(selectedSkills, customSkills)}`);
     console.log(`Git: ${gitResult}`);
+    if (writeResult.overwritten.length) {
+      console.log(`Перезаписано файлов: ${writeResult.overwritten.length}`);
+    }
+    if (writeResult.skipped.length) {
+      console.log(`Пропущено файлов: ${writeResult.skipped.length}`);
+    }
     console.log("\nПервый промпт для следующей сессии:");
     console.log("────────────────────────────────────");
     if (mode !== "advanced") {
@@ -1430,6 +1487,7 @@ Usage:
   unit simple
   unit discovery
   unit advanced
+  unit simple --here
   unit --mode simple
   unit --mode discovery
   unit --mode advanced
@@ -1442,9 +1500,11 @@ Modes:
 Examples:
   cd C:\\server\\projects
   unit simple
+  unit simple --here
   unit --mode simple
 
-The generated project is created in the current directory.
+By default, the generated project is created as a new folder in the current directory.
+Use --here to create files directly in the current folder.
 `);
 }
 

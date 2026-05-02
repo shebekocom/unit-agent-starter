@@ -45,12 +45,29 @@ C:\server\projects\
 
 The starter does not copy itself into the generated project.
 
+By default, `unit` creates a new folder with the project name. To create files directly in the current folder, use:
+
+```bash
+unit simple --here
+unit discovery --here
+```
+
+`--here` does not overwrite existing generated files silently. If `PRD.md`, `MEMORY.md`, `TASKS.md`, or another target file already exists, Unit asks what to do.
+When a target file already exists, Unit asks per file:
+
+```text
+overwrite / skip / stop
+```
+
+Press Enter to skip. This protects project memory files from accidental overwrite.
+
 Explicit modes:
 
 ```bash
 unit simple
 unit discovery
 unit advanced
+unit simple --here
 
 npm run start:simple
 npm run start:discovery
